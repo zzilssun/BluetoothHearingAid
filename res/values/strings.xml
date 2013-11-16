@@ -3,7 +3,7 @@
 
     <string name="app_name">블루투스 보청기</string>
     <string name="voice_record">음성 녹음</string>
-    <string name="emergency_call">응급 상황</string>
+    <string name="emergency_call">응급 연락</string>
     <string name="action_record">녹음</string>
 
 </resources>

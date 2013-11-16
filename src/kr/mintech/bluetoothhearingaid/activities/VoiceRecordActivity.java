@@ -1,31 +1,31 @@
 package kr.mintech.bluetoothhearingaid.activities;
 
 import kr.mintech.bluetoothhearingaid.R;
+import kr.mintech.bluetoothhearingaid.adapters.FilesAdapter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 
 public class VoiceRecordActivity extends FragmentActivity
 {
+   private FilesAdapter _filesAdapter;
+   
+   
    @Override
    protected void onCreate(Bundle savedInstanceState)
    {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.act_voice_record);
       
-      setupActionBar();
-   }
-   
-   
-   /**
-    * Set up the {@link android.app.ActionBar}.
-    */
-   private void setupActionBar()
-   {
       getActionBar().setDisplayHomeAsUpEnabled(true);
+      
+      _filesAdapter = new FilesAdapter(getApplicationContext());
+      ListView listFile = (ListView) findViewById(R.id.list_files);
+      listFile.setAdapter(_filesAdapter);
    }
    
    
@@ -38,14 +38,6 @@ public class VoiceRecordActivity extends FragmentActivity
    
    
    @Override
-   public boolean onMenuItemSelected(int featureId, MenuItem item)
-   {
-      startRecord();
-      return super.onMenuItemSelected(featureId, item);
-   }
-   
-   
-   @Override
    public boolean onOptionsItemSelected(MenuItem item)
    {
       switch (item.getItemId())
@@ -53,6 +45,10 @@ public class VoiceRecordActivity extends FragmentActivity
          case android.R.id.home:
             NavUtils.navigateUpFromSameTask(this);
             return true;
+            
+         case R.id.action_record:
+            startRecord();
+            break;
       }
       return super.onOptionsItemSelected(item);
    }
@@ -61,6 +57,15 @@ public class VoiceRecordActivity extends FragmentActivity
    private void startRecord()
    {
       Log.w("VoiceRecordActivity.java | startRecord", "|" + "start record" + "|");
+      
+      RecordPanelFragment panel = new RecordPanelFragment();
+      getSupportFragmentManager().beginTransaction().replace(R.id.layout_panel, panel).commit();
+   }
+   
+   
+   private void play()
+   {
+      
    }
    
 }
