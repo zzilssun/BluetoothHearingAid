@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="kr.mintech.bluetoothhearingaid"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:maxSdkVersion="19"
+        android:minSdkVersion="16"
+        android:targetSdkVersion="18" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity android:name=".MainActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+ 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.VoiceRecordActivity"
+            android:label="@string/voice_record"
+            android:launchMode="singleTask" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="kr.mintech.bluetoothhearingaid.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.EmergencyCallActivity"
+            android:label="@string/emergency_call" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="kr.mintech.bluetoothhearingaid.MainActivity" />
+        </activity>
+    </application>
+
+</manifest>
