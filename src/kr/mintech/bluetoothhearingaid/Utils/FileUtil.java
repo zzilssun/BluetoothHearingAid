@@ -37,7 +37,9 @@ public class FileUtil
          
       }
       int duration = player.getDuration();
+      player.reset();
       player.release();
+      player = null;
       
       Calendar calendar = Calendar.getInstance();
       calendar.setTimeInMillis(duration);

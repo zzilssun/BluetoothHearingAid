@@ -102,4 +102,5 @@ public class PreferenceUtil extends BasePreferenceUtil
    {
       return get(SMS_RECEIVER);
    }
+   
 }

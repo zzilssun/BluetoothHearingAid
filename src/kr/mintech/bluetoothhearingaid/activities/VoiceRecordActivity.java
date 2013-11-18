@@ -8,6 +8,8 @@ import kr.mintech.bluetoothhearingaid.activities.RecordPanelFragment.RecordEndCa
 import kr.mintech.bluetoothhearingaid.adapters.FilesAdapter;
 import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
+import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -44,6 +46,23 @@ public class VoiceRecordActivity extends FragmentActivity
       ListView listFile = (ListView) findViewById(R.id.list_files);
       listFile.setAdapter(_filesAdapter);
       listFile.setOnItemClickListener(onFilecliClickListener);
+      
+      String action = getPackageName() + "." + StringConst.KEY_TOGGLE_RECORD_STATE;
+      Log.w("VoiceRecordActivity.java | onCreate", "|" + action + "|" + getIntent().getAction());
+      if (action.equals(getIntent().getAction()))
+         toggleRecordState();
+   }
+   
+   
+   @Override
+   protected void onNewIntent(Intent intent)
+   {
+      super.onNewIntent(intent);
+      
+      String action = getPackageName() + "." + StringConst.KEY_TOGGLE_RECORD_STATE;
+      Log.w("VoiceRecordActivity.java | onNewIntent", "|" + action + "|" + getIntent().getAction());
+      if (action.equals(intent.getAction()))
+         toggleRecordState();
    }
    
    
@@ -59,13 +78,31 @@ public class VoiceRecordActivity extends FragmentActivity
    public void onBackPressed()
    {
       if (_layoutPanel.getChildCount() > 0)
-      {
-         List<Fragment> list = getSupportFragmentManager().getFragments();
-         Fragment fragment = list.get(0);
-         getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-      }
+         clearFragment();
       else
          super.onBackPressed();
+   }
+   
+   
+   private void clearFragment()
+   {
+      List<Fragment> list = getSupportFragmentManager().getFragments();
+      Fragment fragment = list.get(0);
+      Log.w("VoiceRecordActivity.java | clearFragment", "|" + fragment + "|");
+      getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+   }
+   
+   
+   private void toggleRecordState()
+   {
+      Log.w("MainActivity.java | toggleRecordState", "| recording? " + PreferenceUtil.isRecording() + "|");
+      if (PreferenceUtil.isRecording())
+      {
+         Intent intent = new Intent("stop_recording");
+         sendBroadcast(intent);
+      }
+      else
+         startRecord(true);
    }
    
    
@@ -79,7 +116,7 @@ public class VoiceRecordActivity extends FragmentActivity
             return true;
             
          case R.id.action_record:
-            startRecord();
+            startRecord(false);
             break;
       }
       return super.onOptionsItemSelected(item);
@@ -87,12 +124,16 @@ public class VoiceRecordActivity extends FragmentActivity
    
    
    // 녹음 메뉴 클릭
-   private void startRecord()
+   private void startRecord(boolean $startRecoringImmediate)
    {
       Log.w("VoiceRecordActivity.java | startRecord", "|" + "start record" + "|");
       
+      Bundle bundle = new Bundle();
+      bundle.putBoolean(StringConst.KEY_START_RECORDING_ON_OPEN, $startRecoringImmediate);
+      
       RecordPanelFragment panel = new RecordPanelFragment();
       panel.setOnRecordEndCallback(recordEndCallback);
+      panel.setArguments(bundle);
       getSupportFragmentManager().beginTransaction().replace(_layoutPanel.getId(), panel).commit();
    }
    
@@ -121,6 +162,7 @@ public class VoiceRecordActivity extends FragmentActivity
             @Override
             public void run()
             {
+               Log.w("VoiceRecordActivity.java | run", "|" + "refresh" + "|");
                _filesAdapter.refresh();
             }
          };
@@ -136,6 +178,7 @@ public class VoiceRecordActivity extends FragmentActivity
       public void onItemClick(AdapterView<?> parent, View view, int position, long id)
       {
          File file = (File) _filesAdapter.getItem(position);
+         Log.w("VoiceRecordActivity.java | onItemClick", "|" + file.toString() + "|");
          play(file.toString());
       }
    };

@@ -2,6 +2,7 @@ package kr.mintech.bluetoothhearingaid;
 
 import kr.mintech.bluetoothhearingaid.activities.EmergencyCallActivity;
 import kr.mintech.bluetoothhearingaid.activities.VoiceRecordActivity;
+import kr.mintech.bluetoothhearingaid.services.MediaButtonMonitorService;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +20,9 @@ public class MainActivity extends FragmentActivity
       
       ContextUtil.CONTEXT = getApplicationContext();
       
+      Intent serviceIntent = new Intent(getApplicationContext(), MediaButtonMonitorService.class);
+      startService(serviceIntent);
+      
       Button btnVoiceRecord = (Button) findViewById(R.id.btn_voice_record);
       btnVoiceRecord.setOnClickListener(new View.OnClickListener()
       {
@@ -27,7 +31,7 @@ public class MainActivity extends FragmentActivity
          {
             showVoiceRecordAcitivity();
          }
-      }); 
+      });
       
       Button btnEmergencyCall = (Button) findViewById(R.id.btn_emergency_call);
       btnEmergencyCall.setOnClickListener(new View.OnClickListener()

@@ -17,6 +17,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,7 @@ public class PlayPanelFregment extends Fragment
       _calendar = Calendar.getInstance();
       
       _fullPath = getArguments().getString(StringConst.KEY_PATH);
+      Log.w("PlayPanelFregment.java | onCreate", "|" + _fullPath + "|");
    }
    
    
@@ -122,6 +124,7 @@ public class PlayPanelFregment extends Fragment
    
    private void play()
    {
+      _player = null;
       _player = new MediaPlayer();
       _player.setOnPreparedListener(preparedListener);
       _player.setOnCompletionListener(completionListener);
@@ -134,7 +137,7 @@ public class PlayPanelFregment extends Fragment
          {
             _seekbar.setProgress(_player.getCurrentPosition());
          }
-      }, 1, 1, TimeUnit.MICROSECONDS);
+      }, 100, 100, TimeUnit.MILLISECONDS);
       
       try
       {
@@ -160,6 +163,14 @@ public class PlayPanelFregment extends Fragment
       try
       {
          _player.stop();
+      }
+      catch (Exception e)
+      {
+      }
+      
+      try
+      {
+         _player.reset();
       }
       catch (Exception e)
       {

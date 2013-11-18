@@ -11,11 +11,12 @@ import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
@@ -33,14 +34,23 @@ public class RecordPanelFragment extends Fragment
    private AudioManager _audioManager;
    private MediaRecorder _recorder;
    private RecordEndCallback _recordEndCallback;
+   private boolean _startRecordingOnOpen = false;
+   private boolean _isStoped = false;
    
    
    @Override
    public void onCreate(Bundle savedInstanceState)
    {
       super.onCreate(savedInstanceState);
+      
       _audioManager = (AudioManager) getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
       ContextUtil.CONTEXT = getActivity().getApplicationContext();
+      
+      IntentFilter filter = new IntentFilter();
+      filter.addAction("stop_recording");
+      getActivity().registerReceiver(stopRecordRecodingReceiver, filter);
+      
+      _startRecordingOnOpen = getArguments().getBoolean(StringConst.KEY_START_RECORDING_ON_OPEN);
    }
    
    
@@ -70,6 +80,9 @@ public class RecordPanelFragment extends Fragment
             stopRecord();
          }
       });
+      
+      if (_startRecordingOnOpen)
+         startRecord();
       
       return view;
    }
@@ -139,6 +152,10 @@ public class RecordPanelFragment extends Fragment
     */
    public void stopRecord()
    {
+      if (_isStoped)
+         return;
+      
+      _isStoped = true;
       Log.w("RecordPanelFragment.java | stopRecord", "|" + "stop" + "|" + PreferenceUtil.lastRecordedFileFullPath());
       _chronometer.stop();
       
@@ -146,10 +163,9 @@ public class RecordPanelFragment extends Fragment
       {
          _audioManager.stopBluetoothSco();
          _recorder.stop();
+         _recorder.reset();
          _recorder.release();
          
-         getActivity().getApplicationContext().sendBroadcast(
-               new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + new File(StringConst.PATH))));
          String filename = PreferenceUtil.lastRecordedFileFullPath();
          _recordEndCallback.onRecordEnd(filename);
       }
@@ -160,6 +176,8 @@ public class RecordPanelFragment extends Fragment
       
       _btnRecordStop.setEnabled(false);
       _btnRecordStart.setEnabled(true);
+      
+      getFragmentManager().beginTransaction().remove(this).commit();
    }
    
    public interface RecordEndCallback
@@ -172,4 +190,13 @@ public class RecordPanelFragment extends Fragment
    {
       _recordEndCallback = $callback;
    }
+   
+   private BroadcastReceiver stopRecordRecodingReceiver = new BroadcastReceiver()
+   {
+      @Override
+      public void onReceive(Context context, Intent intent)
+      {
+         stopRecord();
+      }
+   };
 }

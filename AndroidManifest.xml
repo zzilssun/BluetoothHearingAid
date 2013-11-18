@@ -51,6 +51,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="kr.mintech.bluetoothhearingaid.activities.EmergencyCallActivity" />
         </activity>
+
+        <receiver android:name=".receivers.BluetoothReceiver" >
+            <intent-filter android:priority="2147483647" >
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="android.media.VOLUME_CHANGED_ACTION" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".services.MediaButtonMonitorService" />
     </application>
 
 </manifest>
