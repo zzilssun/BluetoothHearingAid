@@ -5,7 +5,7 @@ import kr.mintech.bluetoothhearingaid.bases.BasePreferenceUtil;
 public class PreferenceUtil extends BasePreferenceUtil
 {
    private static final String RECORDING = "RECORDING";
-   private static final String LAST_RECORDED_FILENAME = "LAST_RECORDED_FILENAME";
+   private static final String LAST_RECORDED_FILE_PATH = "LAST_RECORDED_FILE_PATH";
    
    
    /**
@@ -35,12 +35,12 @@ public class PreferenceUtil extends BasePreferenceUtil
     * 마지막으로 녹음한 파일이름.<br>
     * 레코딩이 끝나고 파일이름을 바꾸기 위해 사용함
     * 
-    * @param $filename
+    * @param $path
     *           파일 경로(/storage/emulated/0/VoiceRecord/voice_20131118_102600.m4a)
     */
-   public static void putLastRecordedFilename(String $filename)
+   public static void putLastRecordedFileFullPath(String $path)
    {
-      put(LAST_RECORDED_FILENAME, $filename);
+      put(LAST_RECORDED_FILE_PATH, $path);
    }
    
    
@@ -49,8 +49,8 @@ public class PreferenceUtil extends BasePreferenceUtil
     * 
     * @return 파일 경로(/storage/emulated/0/VoiceRecord/voice_20131118_102600.m4a)
     */
-   public static String lastRecordedFilename()
+   public static String lastRecordedFileFullPath()
    {
-      return get(LAST_RECORDED_FILENAME);
+      return get(LAST_RECORDED_FILE_PATH);
    }
 }

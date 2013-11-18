@@ -57,7 +57,6 @@ public class RecordPanelFragment extends Fragment
    {
       View view = inflater.inflate(R.layout.fragment_record_panel, container, false);
       
-//      _textRecordDuration = (TextView) view.findViewById(R.id.text_record_duration);
       _chronometer = (Chronometer) view.findViewById(R.id.chronometer);
       
       _btnRecordStart = (Button) view.findViewById(R.id.btn_record_start);
@@ -111,7 +110,7 @@ public class RecordPanelFragment extends Fragment
       _btnRecordStart.setEnabled(false);
       Log.i("RecordPanelFragment.java | startRecord", "|" + file.toString() + "|");
       Log.w("RecordPanelFragment.java | startRecord", "|" + file.toString() + "|");
-      PreferenceUtil.putLastRecordedFilename(file.toString());
+      PreferenceUtil.putLastRecordedFileFullPath(file.toString());
       
       _audioManager.startBluetoothSco();
       
@@ -140,7 +139,7 @@ public class RecordPanelFragment extends Fragment
     */
    public void stopRecord()
    {
-      Log.w("RecordPanelFragment.java | stopRecord", "|" + "stop" + "|" + PreferenceUtil.lastRecordedFilename());
+      Log.w("RecordPanelFragment.java | stopRecord", "|" + "stop" + "|" + PreferenceUtil.lastRecordedFileFullPath());
       _chronometer.stop();
       
       try
@@ -151,7 +150,7 @@ public class RecordPanelFragment extends Fragment
          
          getActivity().getApplicationContext().sendBroadcast(
                new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + new File(StringConst.PATH))));
-         String filename = PreferenceUtil.lastRecordedFilename();
+         String filename = PreferenceUtil.lastRecordedFileFullPath();
          _recordEndCallback.onRecordEnd(filename);
       }
       catch (Exception e)

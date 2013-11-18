@@ -87,8 +87,7 @@ public class FilesAdapter extends BaseAdapter
       File file = _items.get($index);
       
       TextView title = (TextView) view.findViewById(R.id.text_name);
-      String name = file.getName().split("\\.")[0];
-      title.setText(name);
+      title.setText(FileUtil.filenameOnly(file.getName()));
       
       TextView createdAt = (TextView) view.findViewById(R.id.text_created_at);
       createdAt.setText(DateFormatUtils.format(file.lastModified(), "yyyy/MM/dd HH:mm:ss"));

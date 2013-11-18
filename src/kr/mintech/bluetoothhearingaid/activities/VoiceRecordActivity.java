@@ -1,8 +1,11 @@
 package kr.mintech.bluetoothhearingaid.activities;
 
+import java.io.File;
+
 import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.activities.RecordPanelFragment.RecordEndCallback;
 import kr.mintech.bluetoothhearingaid.adapters.FilesAdapter;
+import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,7 +14,10 @@ import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 public class VoiceRecordActivity extends FragmentActivity
@@ -35,6 +41,7 @@ public class VoiceRecordActivity extends FragmentActivity
       _filesAdapter = new FilesAdapter(getApplicationContext());
       ListView listFile = (ListView) findViewById(R.id.list_files);
       listFile.setAdapter(_filesAdapter);
+      listFile.setOnItemClickListener(onFilecliClickListener);
    }
    
    
@@ -79,7 +86,20 @@ public class VoiceRecordActivity extends FragmentActivity
       
       RecordPanelFragment panel = new RecordPanelFragment();
       panel.setOnRecordEndCallback(recordEndCallback);
-      getSupportFragmentManager().beginTransaction().replace(R.id.layout_panel, panel).commit();
+      getSupportFragmentManager().beginTransaction().replace(_layoutPanel.getId(), panel).commit();
+   }
+   
+   
+   private void play(String $fullpath)
+   {
+      Log.w("VoiceRecordActivity.java | play", "|" + $fullpath + "|");
+      
+      Bundle bundle = new Bundle();
+      bundle.putString(StringConst.KEY_PATH, $fullpath);
+      
+      PlayPanelFregment panel = new PlayPanelFregment();
+      panel.setArguments(bundle);
+      getSupportFragmentManager().beginTransaction().replace(_layoutPanel.getId(), panel).commit();
    }
    
    private RecordEndCallback recordEndCallback = new RecordEndCallback()
@@ -97,6 +117,16 @@ public class VoiceRecordActivity extends FragmentActivity
          };
          Handler handler = new Handler();
          handler.postDelayed(runn, 1000);
+      }
+   };
+   
+   private OnItemClickListener onFilecliClickListener = new AdapterView.OnItemClickListener()
+   {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+      {
+         File file = (File) _filesAdapter.getItem(position);
+         play(file.toString());
       }
    };
 }
