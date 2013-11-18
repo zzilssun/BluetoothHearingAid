@@ -113,7 +113,7 @@ public class PreferenceUtil extends BasePreferenceUtil
    
    public static int lastVolume()
    {
-      return get(LAST_VOLUME, -99);
+      return get(LAST_VOLUME, 100);
    }
    
 }
