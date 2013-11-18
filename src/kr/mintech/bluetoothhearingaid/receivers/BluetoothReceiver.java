@@ -3,6 +3,7 @@ package kr.mintech.bluetoothhearingaid.receivers;
 import kr.mintech.bluetoothhearingaid.activities.VoiceRecordActivity;
 import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
+import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -50,17 +51,15 @@ public class BluetoothReceiver extends BroadcastReceiver
       else if ("android.media.VOLUME_CHANGED_ACTION".equals(action))
       {
          int volume = (Integer) $intent.getExtras().get("android.media.EXTRA_VOLUME_STREAM_VALUE");
-         Log.w("BluetoothReceiver.java | onReceive", "|" + volume + "|");
+         int lastVolume = PreferenceUtil.lastVolume();
          
-//         Intent intent = new Intent($context.getPackageName() + "." + StringConst.KEY_TOGGLE_RECORD_STATE);
-//         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//         $context.startActivity(intent);
+         PreferenceUtil.putLastVolume(volume);
          
-         Intent intent = new Intent("stop_recording");
-         $context.sendBroadcast(intent);
-         
-//         KeyEvent keyEvent = (KeyEvent) intent.getExtras().get(Intent.EXTRA_KEY_EVENT);
-//         Log.w("BluetoothReceiver.java | onReceive", "|" + keyEvent.getKeyCode() + "|");
+         if (volume < lastVolume)
+         {
+            Intent intent = new Intent("stop_recording");
+            $context.sendBroadcast(intent);
+         }
       }
    }
 }

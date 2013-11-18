@@ -8,6 +8,7 @@ public class PreferenceUtil extends BasePreferenceUtil
    private static final String LAST_RECORDED_FILE_PATH = "LAST_RECORDED_FILE_PATH";
    private static final String CALL_RECEIVER = "CALL_RECEIVER";
    private static final String SMS_RECEIVER = "SMS_RECEIVER";
+   private static final String LAST_VOLUME = "LAST_VOLUME";
    
    
    /**
@@ -101,6 +102,18 @@ public class PreferenceUtil extends BasePreferenceUtil
    public static String smsReceiver()
    {
       return get(SMS_RECEIVER);
+   }
+   
+   
+   public static void putLastVolume(int $volume)
+   {
+      put(LAST_VOLUME, $volume);
+   }
+   
+   
+   public static int lastVolume()
+   {
+      return get(LAST_VOLUME, -99);
    }
    
 }
