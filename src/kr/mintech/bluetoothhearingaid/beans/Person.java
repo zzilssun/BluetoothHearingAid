@@ -14,6 +14,7 @@ public class Person
    
    public String name = "";
    public String phone = "";
+   public boolean selected = false;
    
    
    /**

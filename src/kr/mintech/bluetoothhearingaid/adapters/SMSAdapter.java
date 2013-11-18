@@ -67,7 +67,7 @@ public class SMSAdapter extends BaseAdapter
    @Override
    public View getView(int $index, View arg1, ViewGroup arg2)
    {
-      View view = _inflater.inflate(R.layout.listitem_sms_receiver, null);
+      View view = _inflater.inflate(R.layout.listitem_person, null);
       
       Person person = _items.get($index);
       

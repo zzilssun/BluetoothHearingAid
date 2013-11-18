@@ -43,14 +43,14 @@ public class MainActivity extends FragmentActivity
    
    private void showVoiceRecordAcitivity()
    {
-      Intent detailIntent = new Intent(this, VoiceRecordActivity.class);
-      startActivity(detailIntent);
+      Intent intent = new Intent(this, VoiceRecordActivity.class);
+      startActivity(intent);
    }
    
    
    private void showEmergencyCallAcitivity()
    {
-      Intent detailIntent = new Intent(this, EmergencyCallActivity.class);
-      startActivity(detailIntent);
+      Intent intent = new Intent(this, EmergencyCallActivity.class);
+      startActivity(intent);
    }
 }
