@@ -1,5 +1,7 @@
 package kr.mintech.bluetoothhearingaid.bases;
 
+import java.util.Set;
+
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -136,5 +138,21 @@ public class BasePreferenceUtil
    {
       SharedPreferences p = instance();
       return p.getInt($key, $default);
+   }
+   
+   
+   public static void put(String $key, Set<String> $set)
+   {
+      SharedPreferences p = instance();
+      SharedPreferences.Editor editor = p.edit();
+      editor.putStringSet($key, $set);
+      editor.commit();
+   }
+   
+   
+   public static Set<String> getStringSet(String $key)
+   {
+      SharedPreferences p = instance();
+      return p.getStringSet($key, null);
    }
 }

@@ -6,6 +6,8 @@ public class PreferenceUtil extends BasePreferenceUtil
 {
    private static final String RECORDING = "RECORDING";
    private static final String LAST_RECORDED_FILE_PATH = "LAST_RECORDED_FILE_PATH";
+   private static final String CALL_RECEIVER = "CALL_RECEIVER";
+   private static final String SMS_RECEIVER = "SMS_RECEIVER";
    
    
    /**
@@ -52,5 +54,52 @@ public class PreferenceUtil extends BasePreferenceUtil
    public static String lastRecordedFileFullPath()
    {
       return get(LAST_RECORDED_FILE_PATH);
+   }
+   
+   
+   /**
+    * 전화 받을 사람의 json 문자열 저장
+    * 
+    * @param $jsonStr
+    *           {"phone":"1234","name":"asdf"}
+    */
+   public static void putCallReceiver(String $jsonStr)
+   {
+      put(CALL_RECEIVER, $jsonStr);
+   }
+   
+   
+   /**
+    * 전화받을 사람의 json 문자열
+    * 
+    * @return {"phone":"1234","name":"asdf"}
+    */
+   public static String callReceiver()
+   {
+      return get(CALL_RECEIVER);
+   }
+   
+   
+   /**
+    * 문자 받을 사람들의 json 문자열 저장
+    * 
+    * @param $jsonStr
+    *           [{"phone":"1234","name":"asdf"},
+    *           {"phone":"12345","name":"asdf1"}]
+    */
+   public static void putSMSReceiver(String $jsonStr)
+   {
+      put(SMS_RECEIVER, $jsonStr);
+   }
+   
+   
+   /**
+    * 전화받을 사람들의 json 문자열
+    * 
+    * @return [{"phone":"1234","name":"asdf"}, {"phone":"12345","name":"asdf1"}]
+    */
+   public static String smsReceiver()
+   {
+      return get(SMS_RECEIVER);
    }
 }

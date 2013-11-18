@@ -86,6 +86,7 @@ public class VoiceRecordActivity extends FragmentActivity
    }
    
    
+   // 녹음 메뉴 클릭
    private void startRecord()
    {
       Log.w("VoiceRecordActivity.java | startRecord", "|" + "start record" + "|");
@@ -96,6 +97,7 @@ public class VoiceRecordActivity extends FragmentActivity
    }
    
    
+   // 리스트에서 파일 하나 클릭
    private void play(String $fullpath)
    {
       Log.w("VoiceRecordActivity.java | play", "|" + $fullpath + "|");
@@ -108,6 +110,7 @@ public class VoiceRecordActivity extends FragmentActivity
       getSupportFragmentManager().beginTransaction().replace(_layoutPanel.getId(), panel).commit();
    }
    
+   // 녹음 종료 후 파일 목록 다시 읽기
    private RecordEndCallback recordEndCallback = new RecordEndCallback()
    {
       @Override
@@ -126,6 +129,7 @@ public class VoiceRecordActivity extends FragmentActivity
       }
    };
    
+   // 파일 클릭했을 때
    private OnItemClickListener onFilecliClickListener = new AdapterView.OnItemClickListener()
    {
       @Override
