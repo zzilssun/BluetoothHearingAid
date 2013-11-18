@@ -105,12 +105,22 @@ public class PreferenceUtil extends BasePreferenceUtil
    }
    
    
+   /**
+    * 마지막 음량 저장
+    * 
+    * @param $volume
+    */
    public static void putLastVolume(int $volume)
    {
       put(LAST_VOLUME, $volume);
    }
    
    
+   /**
+    * 마지막 음량
+    * 
+    * @return
+    */
    public static int lastVolume()
    {
       return get(LAST_VOLUME, 100);
