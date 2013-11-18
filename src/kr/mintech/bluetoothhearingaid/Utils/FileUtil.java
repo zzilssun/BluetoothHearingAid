@@ -1,4 +1,4 @@
-package kr.mintech.bluetoothhearingaid.Utils;
+package kr.mintech.bluetoothhearingaid.utils;
 
 import java.util.Calendar;
 

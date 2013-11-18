@@ -10,7 +10,7 @@
         android:id="@+id/text_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLargeInverse" />
+        android:textAppearance="?android:attr/textAppearanceMediumInverse" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,14 +21,14 @@
             android:id="@+id/text_created_at"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceInverse" />
+            android:textAppearance="?android:attr/textAppearanceSmallInverse" />
 
         <TextView
             android:id="@+id/text_duration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical|right"
-            android:textAppearance="?android:attr/textAppearanceInverse" />
+            android:textAppearance="?android:attr/textAppearanceSmallInverse" />
     </LinearLayout>
 
 </LinearLayout>

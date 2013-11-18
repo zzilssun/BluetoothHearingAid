@@ -2,15 +2,15 @@ package kr.mintech.bluetoothhearingaid.adapters;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import kr.mintech.bluetoothhearingaid.R;
-import kr.mintech.bluetoothhearingaid.Utils.FileUtil;
+import kr.mintech.bluetoothhearingaid.consts.StringConst;
+import kr.mintech.bluetoothhearingaid.utils.FileUtil;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import android.content.Context;
-import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,15 +37,18 @@ public class FilesAdapter extends BaseAdapter
    {
       _items.clear();
       
-      File path = new File(Environment.getExternalStorageDirectory() + "/Sounds");
+      File path = new File(StringConst.PATH);
       if (!path.exists())
          path.mkdirs();
       
       for (File file : path.listFiles())
       {
-         Log.w("FilesAdapter.java | loadFileList", "|" + file.getName() + "|");
          _items.add(file);
       }
+      
+      Collections.reverse(_items);
+      
+      notifyDataSetChanged();
    }
    
    

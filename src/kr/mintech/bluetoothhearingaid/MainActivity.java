@@ -2,6 +2,7 @@ package kr.mintech.bluetoothhearingaid;
 
 import kr.mintech.bluetoothhearingaid.activities.EmergencyCallActivity;
 import kr.mintech.bluetoothhearingaid.activities.VoiceRecordActivity;
+import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -15,6 +16,8 @@ public class MainActivity extends FragmentActivity
    {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.act_main);
+      
+      ContextUtil.CONTEXT = getApplicationContext();
       
       Button btnVoiceRecord = (Button) findViewById(R.id.btn_voice_record);
       btnVoiceRecord.setOnClickListener(new View.OnClickListener()

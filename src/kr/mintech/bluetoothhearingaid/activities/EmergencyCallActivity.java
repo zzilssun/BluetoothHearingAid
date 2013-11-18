@@ -1,6 +1,7 @@
 package kr.mintech.bluetoothhearingaid.activities;
 
 import kr.mintech.bluetoothhearingaid.R;
+import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -13,17 +14,10 @@ public class EmergencyCallActivity extends Activity
    {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.act_emergency_call);
-      // Show the Up button in the action bar.
-      setupActionBar();
-   }
-   
-   
-   /**
-    * Set up the {@link android.app.ActionBar}.
-    */
-   private void setupActionBar()
-   {
+      
       getActionBar().setDisplayHomeAsUpEnabled(true);
+      
+      ContextUtil.CONTEXT = getApplicationContext();
    }
    
    
