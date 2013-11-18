@@ -50,14 +50,6 @@ public class PlayPanelFregment extends Fragment
    
    
    @Override
-   public void onDestroy()
-   {
-      stop();
-      super.onDestroy();
-   }
-   
-   
-   @Override
    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
    {
       View view = inflater.inflate(R.layout.fragment_play_panel, container, false);
@@ -120,6 +112,14 @@ public class PlayPanelFregment extends Fragment
    }
    
    
+   @Override
+   public void onDestroyView()
+   {
+      stop();
+      super.onDestroyView();
+   }
+   
+   
    private void play()
    {
       _player = new MediaPlayer();
@@ -149,7 +149,10 @@ public class PlayPanelFregment extends Fragment
    }
    
    
-   private void stop()
+   /**
+    * 재생 중지
+    */
+   public void stop()
    {
       _btnPlay.setEnabled(true);
       _btnStop.setEnabled(false);

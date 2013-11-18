@@ -45,14 +45,6 @@ public class RecordPanelFragment extends Fragment
    
    
    @Override
-   public void onDestroyView()
-   {
-      stopRecord();
-      super.onDestroyView();
-   }
-   
-   
-   @Override
    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
    {
       View view = inflater.inflate(R.layout.fragment_record_panel, container, false);
@@ -80,6 +72,14 @@ public class RecordPanelFragment extends Fragment
       });
       
       return view;
+   }
+   
+   
+   @Override
+   public void onDestroyView()
+   {
+      stopRecord();
+      super.onDestroyView();
    }
    
    

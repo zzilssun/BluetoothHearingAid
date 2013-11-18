@@ -1,6 +1,7 @@
 package kr.mintech.bluetoothhearingaid.activities;
 
 import java.io.File;
+import java.util.List;
 
 import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.activities.RecordPanelFragment.RecordEndCallback;
@@ -9,6 +10,7 @@ import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -57,7 +59,11 @@ public class VoiceRecordActivity extends FragmentActivity
    public void onBackPressed()
    {
       if (_layoutPanel.getChildCount() > 0)
-         _layoutPanel.removeAllViews();
+      {
+         List<Fragment> list = getSupportFragmentManager().getFragments();
+         Fragment fragment = list.get(0);
+         getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+      }
       else
          super.onBackPressed();
    }
