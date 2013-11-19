@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import kr.mintech.bluetoothhearingaid.R;
+import kr.mintech.bluetoothhearingaid.beans.FileViewHolder;
 import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.FileUtil;
 
@@ -80,21 +81,32 @@ public class FilesAdapter extends BaseAdapter
    
    
    @Override
-   public View getView(int $index, View $view, ViewGroup arg2)
+   public View getView(int $index, View $convertView, ViewGroup arg2)
    {
-      View view = _inflater.inflate(R.layout.listitem_record_file, null);
+      FileViewHolder holder;
+      
+      if ($convertView == null)
+      {
+         $convertView = _inflater.inflate(R.layout.listitem_record_file, null);
+         
+         holder = new FileViewHolder();
+         holder.title = (TextView) $convertView.findViewById(R.id.text_name);
+         holder.createdAt = (TextView) $convertView.findViewById(R.id.text_created_at);
+         holder.duration = (TextView) $convertView.findViewById(R.id.text_duration);
+         
+         $convertView.setTag(holder);
+      }
+      else
+      {
+         holder = (FileViewHolder) $convertView.getTag();
+      }
       
       File file = _items.get($index);
       
-      TextView title = (TextView) view.findViewById(R.id.text_name);
-      title.setText(FileUtil.filenameOnly(file.getName()));
+      holder.title.setText(FileUtil.filenameOnly(file.getName()));
+      holder.createdAt.setText(DateFormatUtils.format(file.lastModified(), "yyyy/MM/dd HH:mm:ss"));
+      holder.duration.setText(FileUtil.duration(_context, file.getAbsolutePath()));
       
-      TextView createdAt = (TextView) view.findViewById(R.id.text_created_at);
-      createdAt.setText(DateFormatUtils.format(file.lastModified(), "yyyy/MM/dd HH:mm:ss"));
-      
-      TextView duration = (TextView) view.findViewById(R.id.text_duration);
-      duration.setText(FileUtil.duration(_context, file.getAbsolutePath()));
-      
-      return view;
+      return $convertView;
    }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.beans.Person;
+import kr.mintech.bluetoothhearingaid.beans.PersonViewHolder;
 import kr.mintech.bluetoothhearingaid.consts.NumberConst;
 import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
 
@@ -110,22 +111,33 @@ public class PeopleAdapter extends BaseAdapter
    
    
    @Override
-   public View getView(int $index, View arg1, ViewGroup arg2)
+   public View getView(int $index, View $convertView, ViewGroup arg2)
    {
-      View view = _inflater.inflate(R.layout.listitem_person, null);
+      PersonViewHolder holder;
+      
+      if ($convertView == null)
+      {
+         $convertView = _inflater.inflate(R.layout.listitem_person, null);
+         
+         holder = new PersonViewHolder();
+         holder.name = (TextView) $convertView.findViewById(R.id.text_name);
+         holder.phone = (TextView) $convertView.findViewById(R.id.text_phone);
+         holder.selected = (CheckBox) $convertView.findViewById(R.id.checkbox);
+         
+         $convertView.setTag(holder);
+      }
+      else
+      {
+         holder = (PersonViewHolder) $convertView.getTag();
+      }
       
       Person person = _items.get($index);
       
-      TextView textName = (TextView) view.findViewById(R.id.text_name);
-      textName.setText(person.name);
+      holder.name.setText(person.name);
+      holder.phone.setText(person.phone);
+      holder.selected.setChecked(person.selected);
       
-      TextView textPhone = (TextView) view.findViewById(R.id.text_phone);
-      textPhone.setText(person.phone);
-      
-      CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
-      checkbox.setChecked(person.selected);
-      
-      return view;
+      return $convertView;
    }
    
 }
