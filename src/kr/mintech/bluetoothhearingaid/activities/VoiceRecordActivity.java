@@ -48,7 +48,7 @@ public class VoiceRecordActivity extends FragmentActivity
       listFile.setOnItemClickListener(onFilecliClickListener);
       
       String action = getPackageName() + "." + StringConst.KEY_TOGGLE_RECORD_STATE;
-      Log.w("VoiceRecordActivity.java | onCreate", "|" + action + "|" + getIntent().getAction());
+      Log.i("VoiceRecordActivity.java | onCreate", "|" + action + "|" + getIntent().getAction());
       if (action.equals(getIntent().getAction()))
          toggleRecordState();
    }
@@ -60,7 +60,7 @@ public class VoiceRecordActivity extends FragmentActivity
       super.onNewIntent(intent);
       
       String action = getPackageName() + "." + StringConst.KEY_TOGGLE_RECORD_STATE;
-      Log.w("VoiceRecordActivity.java | onNewIntent", "|" + action + "|" + getIntent().getAction());
+      Log.i("VoiceRecordActivity.java | onNewIntent", "|" + action + "|" + getIntent().getAction());
       if (action.equals(intent.getAction()))
          toggleRecordState();
    }
@@ -88,17 +88,16 @@ public class VoiceRecordActivity extends FragmentActivity
    {
       List<Fragment> list = getSupportFragmentManager().getFragments();
       Fragment fragment = list.get(0);
-      Log.w("VoiceRecordActivity.java | clearFragment", "|" + fragment + "|");
       getSupportFragmentManager().beginTransaction().remove(fragment).commit();
    }
    
    
    private void toggleRecordState()
    {
-      Log.w("MainActivity.java | toggleRecordState", "| recording? " + PreferenceUtil.isRecording() + "|");
+      Log.i("MainActivity.java | toggleRecordState", "| recording? " + PreferenceUtil.isRecording() + "|");
       if (PreferenceUtil.isRecording())
       {
-         Intent intent = new Intent("stop_recording");
+         Intent intent = new Intent(StringConst.STOP_RECORING);
          sendBroadcast(intent);
       }
       else
@@ -126,7 +125,7 @@ public class VoiceRecordActivity extends FragmentActivity
    // 녹음 메뉴 클릭
    private void startRecord(boolean $startRecoringImmediate)
    {
-      Log.w("VoiceRecordActivity.java | startRecord", "|" + "start record" + "|");
+      Log.i("VoiceRecordActivity.java | startRecord", "|" + "start record" + "|");
       
       Bundle bundle = new Bundle();
       bundle.putBoolean(StringConst.KEY_START_RECORDING_ON_OPEN, $startRecoringImmediate);
@@ -141,7 +140,7 @@ public class VoiceRecordActivity extends FragmentActivity
    // 리스트에서 파일 하나 클릭
    private void play(String $fullpath)
    {
-      Log.w("VoiceRecordActivity.java | play", "|" + $fullpath + "|");
+      Log.i("VoiceRecordActivity.java | play", "|" + $fullpath + "|");
       
       Bundle bundle = new Bundle();
       bundle.putString(StringConst.KEY_PATH, $fullpath);
@@ -162,7 +161,7 @@ public class VoiceRecordActivity extends FragmentActivity
             @Override
             public void run()
             {
-               Log.w("VoiceRecordActivity.java | run", "|" + "refresh" + "|");
+               Log.i("VoiceRecordActivity.java | run", "|" + "refresh" + "|");
                _filesAdapter.refresh();
             }
          };
@@ -178,7 +177,7 @@ public class VoiceRecordActivity extends FragmentActivity
       public void onItemClick(AdapterView<?> parent, View view, int position, long id)
       {
          File file = (File) _filesAdapter.getItem(position);
-         Log.w("VoiceRecordActivity.java | onItemClick", "|" + file.toString() + "|");
+         Log.i("VoiceRecordActivity.java | onItemClick", "|" + file.toString() + "|");
          play(file.toString());
       }
    };

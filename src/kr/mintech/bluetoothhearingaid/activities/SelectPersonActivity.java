@@ -48,7 +48,6 @@ public class SelectPersonActivity extends Activity
    private void checkResult()
    {
       ArrayList<Person> data = _peopleAdapter.checkedPeople();
-      Log.w("SelectPersonActivity.java | onBackPressed", "|" + data.size() + "|");
       if (data.size() > 0)
          setResult(RESULT_OK);
    }

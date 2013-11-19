@@ -13,5 +13,6 @@ public class StringConst
    public static final String KEY_TOGGLE_RECORD_STATE = "KEY_TOGGLE_RECORD_STATE";
    
    public static final String FORWORD_BROADCAST = "FORWORD_BROADCAST";
+   public static final String STOP_RECORING = "STOP_RECORING";
    public static final String KEY_CODE = "key_code";
 }

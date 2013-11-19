@@ -47,7 +47,7 @@ public class PlayPanelFregment extends Fragment
       _calendar = Calendar.getInstance();
       
       _fullPath = getArguments().getString(StringConst.KEY_PATH);
-      Log.w("PlayPanelFregment.java | onCreate", "|" + _fullPath + "|");
+      Log.i("PlayPanelFregment.java | onCreate", "|" + _fullPath + "|");
    }
    
    

@@ -47,7 +47,7 @@ public class RecordPanelFragment extends Fragment
       ContextUtil.CONTEXT = getActivity().getApplicationContext();
       
       IntentFilter filter = new IntentFilter();
-      filter.addAction("stop_recording");
+      filter.addAction(StringConst.STOP_RECORING);
       getActivity().registerReceiver(stopRecordRecodingReceiver, filter);
       
       _startRecordingOnOpen = getArguments().getBoolean(StringConst.KEY_START_RECORDING_ON_OPEN);
@@ -91,6 +91,7 @@ public class RecordPanelFragment extends Fragment
    @Override
    public void onDestroyView()
    {
+      getActivity().unregisterReceiver(stopRecordRecodingReceiver);
       stopRecord();
       super.onDestroyView();
    }
@@ -122,7 +123,6 @@ public class RecordPanelFragment extends Fragment
       _btnRecordStop.setEnabled(true);
       _btnRecordStart.setEnabled(false);
       Log.i("RecordPanelFragment.java | startRecord", "|" + file.toString() + "|");
-      Log.w("RecordPanelFragment.java | startRecord", "|" + file.toString() + "|");
       PreferenceUtil.putLastRecordedFileFullPath(file.toString());
       
       _audioManager.startBluetoothSco();
@@ -136,7 +136,7 @@ public class RecordPanelFragment extends Fragment
          _recorder.setOutputFile(file.toString());
          _recorder.prepare();
          _recorder.start();
-         
+         PreferenceUtil.putIsRecording(true);
          _chronometer.setBase(SystemClock.elapsedRealtime());
          _chronometer.start();
       }
@@ -156,7 +156,11 @@ public class RecordPanelFragment extends Fragment
          return;
       
       _isStoped = true;
-      Log.w("RecordPanelFragment.java | stopRecord", "|" + "stop" + "|" + PreferenceUtil.lastRecordedFileFullPath());
+      
+      if (!PreferenceUtil.isRecording())
+         return;
+      
+      Log.i("RecordPanelFragment.java | stopRecord", "|" + "stop" + "|" + PreferenceUtil.lastRecordedFileFullPath());
       _chronometer.stop();
       
       try
@@ -165,7 +169,9 @@ public class RecordPanelFragment extends Fragment
          _recorder.stop();
          _recorder.reset();
          _recorder.release();
+         _recorder = null;
          
+         PreferenceUtil.putIsRecording(false);
          String filename = PreferenceUtil.lastRecordedFileFullPath();
          _recordEndCallback.onRecordEnd(filename);
       }

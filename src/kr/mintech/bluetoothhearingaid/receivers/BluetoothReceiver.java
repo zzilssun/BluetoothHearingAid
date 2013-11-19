@@ -16,7 +16,7 @@ public class BluetoothReceiver extends BroadcastReceiver
    public void onReceive(final Context $context, Intent $intent)
    {
       ContextUtil.CONTEXT = $context;
-      Log.w("BluetoothReceiver.java | onReceive", "|" + $intent.getAction() + "|");
+      Log.i("BluetoothReceiver.java | onReceive", "|" + $intent.getAction() + "|");
       
       String action = $intent.getAction();
       if (Intent.ACTION_MEDIA_BUTTON.equals(action))
@@ -24,11 +24,11 @@ public class BluetoothReceiver extends BroadcastReceiver
          KeyEvent keyEvent = (KeyEvent) $intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
          int currentKey = keyEvent.getKeyCode();
          
-         Log.w("BluetoothReceiver.java | onReceive", "|" + $intent.getAction() + " | " + keyEvent.getAction());
+         Log.i("BluetoothReceiver.java | onReceive", "|" + $intent.getAction() + " | " + keyEvent.getAction());
          
          if (KeyEvent.ACTION_UP == keyEvent.getAction())
          {
-            Log.w("BluetoothReceiver.java | onReceive", "|" + currentKey + "|");
+            Log.i("BluetoothReceiver.java | onReceive", "|" + currentKey + "|");
             
             // 원래는 KeyEvent.KEYCODE_MEDIA_RECORD
             if (currentKey == KeyEvent.KEYCODE_MEDIA_PREVIOUS)
@@ -40,7 +40,7 @@ public class BluetoothReceiver extends BroadcastReceiver
             }
             else
             {
-               Log.w("BluetoothReceiver.java | onReceive", "|" + "forword" + "|");
+               Log.i("BluetoothReceiver.java | onReceive", "|" + "forword" + "|");
                
                Intent intent = new Intent(StringConst.FORWORD_BROADCAST);
                intent.putExtra(StringConst.KEY_CODE, currentKey);

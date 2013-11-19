@@ -37,7 +37,7 @@ public class MediaButtonMonitorService extends Service
    public void onCreate()
    {
       super.onCreate();
-      Log.w("MediaButtonMonitorService.java | onCreate", "|" + "onCreate()" + "|");
+      Log.i("MediaButtonMonitorService.java | onCreate", "|" + "onCreate()" + "|");
       mComponentName = new ComponentName(getPackageName(), BluetoothReceiver.class.getName());
       mSettingsObserver = new SettingsObserver();
       mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -49,7 +49,7 @@ public class MediaButtonMonitorService extends Service
    {
       super.onStartCommand(intent, flags, startId);
       
-      Log.w("MediaButtonMonitorService.java | onStartCommand", "|" + "onStartCommand(" + intent + ", " + flags + ", " + startId + "|");
+      Log.i("MediaButtonMonitorService.java | onStartCommand", "|" + "onStartCommand(" + intent + ", " + flags + ", " + startId + "|");
       registerMediaButtonReceiver();
       return START_STICKY;
    }
@@ -65,7 +65,7 @@ public class MediaButtonMonitorService extends Service
    
    public void registerMediaButtonReceiver()
    {
-      Log.w("MediaButtonMonitorService.java | registerMediaButtonReceiver", "|" + "registerMediaButtonReceiver()" + "|");
+      Log.i("MediaButtonMonitorService.java | registerMediaButtonReceiver", "|" + "registerMediaButtonReceiver()" + "|");
       mAudioManager.registerMediaButtonEventReceiver(mComponentName);
       
       IntentFilter forwardFilter = new IntentFilter();
@@ -76,7 +76,7 @@ public class MediaButtonMonitorService extends Service
    
    public void unregisterMediaButtonReceiver()
    {
-      Log.w("MediaButtonMonitorService.java | onDestroy", "|" + "onDestroy() called. Unregistering media button receiver." + "|");
+      Log.i("MediaButtonMonitorService.java | onDestroy", "|" + "onDestroy() called. Unregistering media button receiver." + "|");
       mAudioManager.unregisterMediaButtonEventReceiver(mComponentName);
       
       try
@@ -96,7 +96,7 @@ public class MediaButtonMonitorService extends Service
       {
          unregisterMediaButtonReceiver();
          int keycode = $intent.getIntExtra(StringConst.KEY_CODE, -1);
-         Log.w("forwordReceiver | onReceive", "|" + keycode + "|");
+         Log.i("forwordReceiver | onReceive", "|" + keycode + "|");
          
          MusicController mCtrl = new MusicController(MediaButtonMonitorService.this);
          mCtrl.putKeyCommand(keycode);
@@ -125,23 +125,16 @@ public class MediaButtonMonitorService extends Service
       public void onChange(boolean selfChange)
       {
          super.onChange(selfChange);
-         Log.w("MediaButtonMonitorService.java | onChange", "|" + "onChange(" + selfChange + ")" + "|");
+         Log.i("MediaButtonMonitorService.java | onChange", "|" + "onChange(" + selfChange + ")" + "|");
          String receiverName = Settings.System.getString(mContentResolver, MEDIA_BUTTON_RECEIVER);
-         Log.w("MediaButtonMonitorService.java | onChange", "|" + "MEDIA_BUTTON_RECEIVER changed to " + receiverName + "|");
+         Log.i("MediaButtonMonitorService.java | onChange", "|" + "MEDIA_BUTTON_RECEIVER changed to " + receiverName + "|");
          String flatten = mMonitorService.mComponentName.flattenToString();
-         Log.w("MediaButtonMonitorService.java | onChange", "|" + receiverName.equals(flatten) + " : '" + receiverName + "' == '" + flatten);
+         Log.i("MediaButtonMonitorService.java | onChange", "|" + receiverName.equals(flatten) + " : '" + receiverName + "' == '" + flatten);
          
          if (!selfChange && !receiverName.equals(flatten))
          {
             mMonitorService.registerMediaButtonReceiver();
          }
-//         if (!selfChange && !receiverName.equals(flatten))
-//         {
-////            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mMonitorService.getApplicationContext());
-////            preferences.edit().putString(LAST_MEDIA_BUTTON_RECEIVER, receiverName).commit();
-////            Log.w("SettingsObserver", "Set LAST_MEDIA_BUTTON_RECEIVER to" + receiverName);
-//         mMonitorService.registerMediaButtonReceiver();
-//         }
       }
    }
 }
