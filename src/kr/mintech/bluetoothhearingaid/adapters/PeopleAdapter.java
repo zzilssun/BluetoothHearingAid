@@ -6,10 +6,6 @@ import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.beans.Person;
 import kr.mintech.bluetoothhearingaid.beans.PersonViewHolder;
 import kr.mintech.bluetoothhearingaid.consts.NumberConst;
-import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
-
-import org.json.JSONArray;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
@@ -70,20 +66,6 @@ public class PeopleAdapter extends BaseAdapter
          if (person.selected)
             result.add(person);
       }
-      
-      JSONArray jsonArray = new JSONArray();
-      for (Person person : result)
-      {
-         jsonArray.put(person.json());
-      }
-      
-      if (_type == NumberConst.TYPE_CALL)
-      {
-         Person person = result.get(0);
-         PreferenceUtil.putCallReceiver(person.jsonStr());
-      }
-      else
-         PreferenceUtil.putSMSReceiver(jsonArray.toString());
       
       return result;
    }
