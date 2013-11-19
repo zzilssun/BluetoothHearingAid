@@ -24,12 +24,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.ImageButton;
 
 public class RecordPanelFragment extends Fragment
 {
-   private Button _btnRecordStart, _btnRecordStop;
+   private ImageButton _btnRecordStart, _btnRecordStop;
    private Chronometer _chronometer;
    private AudioManager _audioManager;
    private MediaRecorder _recorder;
@@ -61,7 +61,7 @@ public class RecordPanelFragment extends Fragment
       
       _chronometer = (Chronometer) view.findViewById(R.id.chronometer);
       
-      _btnRecordStart = (Button) view.findViewById(R.id.btn_record_start);
+      _btnRecordStart = (ImageButton) view.findViewById(R.id.btn_record_start);
       _btnRecordStart.setOnClickListener(new View.OnClickListener()
       {
          @Override
@@ -71,7 +71,7 @@ public class RecordPanelFragment extends Fragment
          }
       });
       
-      _btnRecordStop = (Button) view.findViewById(R.id.btn_record_stop);
+      _btnRecordStop = (ImageButton) view.findViewById(R.id.btn_record_stop);
       _btnRecordStop.setOnClickListener(new View.OnClickListener()
       {
          @Override

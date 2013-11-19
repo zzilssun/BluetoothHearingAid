@@ -2,8 +2,8 @@
 
     <item
         android:id="@+id/action_record"
+        android:icon="@drawable/create_contact"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom|withText"
-        android:title="녹음"/>
+        android:showAsAction="ifRoom|withText"/>
 
 </menu>

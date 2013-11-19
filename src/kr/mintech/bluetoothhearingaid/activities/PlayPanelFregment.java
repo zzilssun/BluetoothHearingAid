@@ -21,7 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -29,7 +29,7 @@ import android.widget.Toast;
 
 public class PlayPanelFregment extends Fragment
 {
-   private Button _btnPlay, _btnStop;
+   private ImageButton _btnPlay, _btnStop;
    private TextView _textCurrentPosition, _textTotalDuration;
    private TextView _textTitle;
    private SeekBar _seekbar;
@@ -88,7 +88,7 @@ public class PlayPanelFregment extends Fragment
          }
       });
       
-      _btnPlay = (Button) view.findViewById(R.id.btn_play_start);
+      _btnPlay = (ImageButton) view.findViewById(R.id.btn_play_start);
       _btnPlay.setOnClickListener(new View.OnClickListener()
       {
          @Override
@@ -98,7 +98,7 @@ public class PlayPanelFregment extends Fragment
          }
       });
       
-      _btnStop = (Button) view.findViewById(R.id.btn_play_stop);
+      _btnStop = (ImageButton) view.findViewById(R.id.btn_play_stop);
       _btnStop.setOnClickListener(new View.OnClickListener()
       {
          @Override

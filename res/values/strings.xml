@@ -6,13 +6,6 @@
     <!-- buttons -->
     <string name="voice_record">음성 녹음</string>
     <string name="emergency_call">응급 연락</string>
-    <string name="action_record">녹음</string>
     <string name="select_person">사람 찾기</string>
-
-    <!-- record / play -->
-    <string name="default_duration">00:00</string>
-    <string name="record">녹음</string>
-    <string name="stop">중지</string>
-    <string name="play">재생</string>
 
 </resources>
