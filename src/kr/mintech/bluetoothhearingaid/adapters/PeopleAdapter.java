@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.beans.Person;
 import kr.mintech.bluetoothhearingaid.beans.PersonViewHolder;
-import kr.mintech.bluetoothhearingaid.consts.NumberConst;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
@@ -20,15 +19,13 @@ public class PeopleAdapter extends BaseAdapter
 {
    private ArrayList<Person> _items = new ArrayList<Person>();
    private LayoutInflater _inflater;
-   private int _type = NumberConst.TYPE_CALL;
    
    
-   public PeopleAdapter(Context $context, int $type)
+   public PeopleAdapter(Context $context)
    {
       super();
       _inflater = LayoutInflater.from($context);
       _items.clear();
-      _type = $type;
       
       Cursor cursor = $context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
       

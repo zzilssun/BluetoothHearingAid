@@ -32,7 +32,7 @@ public class SelectPersonActivity extends Activity
       
       _type = getIntent().getIntExtra(StringConst.KEY_CALL_SMS_TYPE, NumberConst.TYPE_CALL);
       
-      _peopleAdapter = new PeopleAdapter(getApplicationContext(), _type);
+      _peopleAdapter = new PeopleAdapter(getApplicationContext());
       ListView listPeople = (ListView) findViewById(R.id.list_people);
       listPeople.setAdapter(_peopleAdapter);
       listPeople.setOnItemClickListener(onItemClickListener);
