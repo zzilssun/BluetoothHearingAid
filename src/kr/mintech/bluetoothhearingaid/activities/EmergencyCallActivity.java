@@ -1,16 +1,27 @@
 package kr.mintech.bluetoothhearingaid.activities;
 
+import java.util.ArrayList;
+
 import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.adapters.SMSAdapter;
 import kr.mintech.bluetoothhearingaid.beans.Person;
 import kr.mintech.bluetoothhearingaid.consts.NumberConst;
 import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
+import kr.mintech.bluetoothhearingaid.utils.LocationManager;
 import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
 import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.NavUtils;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,11 +29,18 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
+
 public class EmergencyCallActivity extends Activity
 {
+   private static final String SMS_SENT = "SMS_SENT";
+   private static final String SMS_DELIVERED = "SMS_DELIVERED";
+   
    private TextView _textCallReceiver;
    private Button _btnSelectCall, _btnSelectSMS;
    private SMSAdapter _smsAdapter;
+   private LocationManager _locationManager;
+   private Location _currentLocation;
    
    
    @Override
@@ -61,6 +79,36 @@ public class EmergencyCallActivity extends Activity
       _smsAdapter = new SMSAdapter(getApplicationContext());
       ListView listSMS = (ListView) findViewById(R.id.list_sms);
       listSMS.setAdapter(_smsAdapter);
+      
+      _locationManager = new LocationManager(getApplicationContext(), locationChangedListener);
+      
+      checkDropModeRecording(getIntent());
+   }
+   
+   
+   @Override
+   protected void onNewIntent(Intent $intent)
+   {
+      super.onNewIntent($intent);
+      checkDropModeRecording($intent);
+   }
+   
+   
+   @Override
+   protected void onStop()
+   {
+      super.onStop();
+      _locationManager.disconnect();
+      
+      try
+      {
+         unregisterReceiver(sentReceiver);
+         unregisterReceiver(deliveryReceiver);
+      }
+      catch (Exception e)
+      {
+//         e.printStackTrace();
+      }
    }
    
    
@@ -74,6 +122,66 @@ public class EmergencyCallActivity extends Activity
             return true;
       }
       return super.onOptionsItemSelected(item);
+   }
+   
+   
+   private void checkDropModeRecording(Intent $intent)
+   {
+      String action = $intent.getAction();
+      if (!StringConst.ACTION_DROP_MODE_RECORD_END.equals(action))
+         return;
+      
+      _locationManager.startLocationFind();
+   }
+   
+   
+   private void sendSMS()
+   {
+      Log.i("EmergencyCallActivity.java | sendSMS", "|" + _currentLocation.getLatitude() + "," + _currentLocation.getLongitude());
+      
+      ArrayList<Person> people = _smsAdapter.list();
+      if (!people.isEmpty())
+      {
+         String location = _currentLocation.getLatitude() + "," + _currentLocation.getLongitude();
+         final String message = getString(R.string.sms_content, location);
+         Log.i("EmergencyCallActivity.java | sendSMS", "|" + message + "|");
+         
+         final PendingIntent sentPI = PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent(SMS_SENT), 0);
+         final PendingIntent deliveryPI = PendingIntent.getBroadcast(getApplicationContext(), 1, new Intent(SMS_DELIVERED), 1);
+         
+         registerReceiver(sentReceiver, new IntentFilter(SMS_SENT));
+         registerReceiver(deliveryReceiver, new IntentFilter(SMS_DELIVERED));
+         
+         final SmsManager sms = SmsManager.getDefault();
+         
+         for (int i = 0; i < people.size(); i++)
+         {
+            final Person person = people.get(i);
+            
+            Runnable runn = new Runnable()
+            {
+               @Override
+               public void run()
+               {
+                  sms.sendTextMessage(person.phone, null, message, sentPI, deliveryPI);
+               }
+            };
+            Handler handler = new Handler();
+            handler.postDelayed(runn, i * 5000);
+         }
+      }
+      startCall();
+   }
+   
+   
+   private void startCall()
+   {
+      Person person = loadCallReceiver();
+      Log.i("EmergencyCallActivity.java | startCall", "|" + "@@@@@@@@@@@@@@@@" + "|" + person.name + "|" + person.phone);
+      
+      Intent intent = new Intent(Intent.ACTION_CALL);
+      intent.setData(Uri.parse("tel:" + person.phone));
+      startActivity(intent);
    }
    
    
@@ -108,8 +216,84 @@ public class EmergencyCallActivity extends Activity
    
    private void refreshCallReceiver()
    {
-      String callReceiverJson = PreferenceUtil.callReceiver();
-      Person person = new Person(callReceiverJson);
+      Person person = loadCallReceiver();
       _textCallReceiver.setText(person.name + " " + person.phone);
    }
+   
+   
+   private Person loadCallReceiver()
+   {
+      String callReceiverJson = PreferenceUtil.callReceiver();
+      return new Person(callReceiverJson);
+   }
+   
+   private OnLocationChangedListener locationChangedListener = new OnLocationChangedListener()
+   {
+      @Override
+      public void onLocationChanged(Location $location)
+      {
+         if ($location != null)
+         {
+            _currentLocation = $location;
+            _locationManager.disconnect();
+            sendSMS();
+         }
+      }
+   };
+   
+   private BroadcastReceiver sentReceiver = new BroadcastReceiver()
+   {
+      @Override
+      public void onReceive(Context context, Intent intent)
+      {
+         switch (getResultCode())
+         {
+            case RESULT_OK:
+               Log.w("MainActivity.java | sentReceiver", "|" + "sms sent" + "|");
+               break;
+            
+            case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+               Log.w("MainActivity.java | sentReceiver", "|" + "SmsManager.RESULT_ERROR_GENERIC_FAILURE:" + "|");
+               break;
+            
+            case SmsManager.RESULT_ERROR_NO_SERVICE:
+               Log.w("MainActivity.java | sentReceiver", "|" + "SmsManager.RESULT_ERROR_NO_SERVICE" + "|");
+               break;
+            
+            case SmsManager.RESULT_ERROR_NULL_PDU:
+               Log.w("MainActivity.java | sentReceiver", "|" + "SmsManager.RESULT_ERROR_NULL_PDU" + "|");
+               break;
+            
+            case SmsManager.RESULT_ERROR_RADIO_OFF:
+               Log.w("MainActivity.java | sentReceiver", "|" + "SmsManager.RESULT_ERROR_RADIO_OFF:" + "|");
+               break;
+            
+            default:
+               Log.w("MainActivity.java | sentReceiver", "| =====" + getResultCode() + "|");
+               break;
+         }
+      }
+   };
+   
+   private BroadcastReceiver deliveryReceiver = new BroadcastReceiver()
+   {
+      @Override
+      public void onReceive(Context context, Intent intent)
+      {
+         switch (getResultCode())
+         {
+            case RESULT_OK:
+               Log.w("MainActivity.java | deliveryReceiver", "|" + "RESULT_OK" + "|");
+               break;
+            
+            case RESULT_CANCELED:
+               Log.w("MainActivity.java | deliveryReceiver", "|" + "RESULT_CANCELED:" + "|");
+               break;
+            
+            default:
+               Log.w("MainActivity.java | deliveryReceiver", "| +++++++" + getResultCode() + "|");
+               break;
+         }
+      }
+   };
 }

@@ -44,6 +44,12 @@ public class SMSAdapter extends BaseAdapter
    }
    
    
+   public ArrayList<Person> list()
+   {
+      return _items;
+   }
+   
+   
    @Override
    public int getCount()
    {

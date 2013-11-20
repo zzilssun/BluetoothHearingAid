@@ -225,7 +225,14 @@ public class RecordPanelFragment extends Fragment
    {
       stopRecord();
       PreferenceUtil.putIsDropModeRecording(false);
-      Log.i("RecordPanelFragment.java | stopDropMode", "|" + "###########################################" + "|");
+      
+      Log.i("RecordPanelFragment.java | stopDropModeRecord", "| drop mode stop by user? " + $stopByUser + "|");
+      if ($stopByUser)
+         return;
+      
+      // 사용자가 중단 시키지 않았을 때는 sms 보낸 후 전화 걸기
+      Intent intent = new Intent(StringConst.ACTION_DROP_MODE_RECORD_END);
+      getActivity().sendBroadcast(intent);
    }
    
    public interface RecordEndCallback

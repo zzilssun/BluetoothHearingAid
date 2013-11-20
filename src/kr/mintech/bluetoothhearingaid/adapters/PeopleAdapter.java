@@ -27,7 +27,7 @@ public class PeopleAdapter extends BaseAdapter
       _inflater = LayoutInflater.from($context);
       _items.clear();
       
-      Cursor cursor = $context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+      Cursor cursor = $context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
       
       cursor.moveToFirst();
       while (!cursor.isAfterLast())

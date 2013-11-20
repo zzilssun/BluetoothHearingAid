@@ -8,6 +8,7 @@ public class StringConst
    
    public static final String ACTION_FORWORD_BROADCAST = "ACTION_FORWORD_BROADCAST";
    public static final String ACTION_STOP_RECORDING = "ACTION_STOP_RECORDING";
+   public static final String ACTION_DROP_MODE_RECORD_END = "kr.mintech.bluetoothhearingaid.ACTION_DROP_MODE_RECORD_END";
    
    public static final String KEY_PATH = "KEY_PATH";
    public static final String KEY_CALL_SMS_TYPE = "KEY_CALL_SMS_TYPE";
