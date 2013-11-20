@@ -69,7 +69,7 @@ public class MediaButtonMonitorService extends Service
       mAudioManager.registerMediaButtonEventReceiver(mComponentName);
       
       IntentFilter forwardFilter = new IntentFilter();
-      forwardFilter.addAction(StringConst.FORWORD_BROADCAST);
+      forwardFilter.addAction(StringConst.ACTION_FORWORD_BROADCAST);
       registerReceiver(forwordReceiver, forwardFilter);
    }
    

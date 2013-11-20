@@ -5,6 +5,7 @@ import kr.mintech.bluetoothhearingaid.bases.BasePreferenceUtil;
 public class PreferenceUtil extends BasePreferenceUtil
 {
    private static final String RECORDING = "RECORDING";
+   private static final String DROP_MODE_RECORDING = "DROP_MODE_RECORDING";
    private static final String LAST_RECORDED_FILE_PATH = "LAST_RECORDED_FILE_PATH";
    private static final String CALL_RECEIVER = "CALL_RECEIVER";
    private static final String SMS_RECEIVER = "SMS_RECEIVER";
@@ -31,6 +32,29 @@ public class PreferenceUtil extends BasePreferenceUtil
    public static boolean isRecording()
    {
       return get(RECORDING, false);
+   }
+   
+   
+   /**
+    * 현재 낙하모드 레코딩 중인가
+    * 
+    * @param $state
+    *           true=레코딩 중
+    */
+   public static void putIsDropModeRecording(boolean $state)
+   {
+      put(DROP_MODE_RECORDING, $state);
+   }
+   
+   
+   /**
+    * 현재 낙하모드 레코딩 중인가
+    * 
+    * @return true=레코딩 중
+    */
+   public static boolean isDropModeRecording()
+   {
+      return get(DROP_MODE_RECORDING, false);
    }
    
    

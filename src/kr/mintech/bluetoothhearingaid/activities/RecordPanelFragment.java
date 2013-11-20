@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Calendar;
 
 import kr.mintech.bluetoothhearingaid.R;
+import kr.mintech.bluetoothhearingaid.consts.NumberConst;
 import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
@@ -18,6 +19,7 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -35,6 +37,7 @@ public class RecordPanelFragment extends Fragment
    private MediaRecorder _recorder;
    private RecordEndCallback _recordEndCallback;
    private boolean _startRecordingOnOpen = false;
+   private int _recordMode = NumberConst.RECORD_MODE_NORMAL;
    private boolean _isStoped = false;
    
    
@@ -47,10 +50,11 @@ public class RecordPanelFragment extends Fragment
       ContextUtil.CONTEXT = getActivity().getApplicationContext();
       
       IntentFilter filter = new IntentFilter();
-      filter.addAction(StringConst.STOP_RECORING);
+      filter.addAction(StringConst.ACTION_STOP_RECORDING);
       getActivity().registerReceiver(stopRecordRecodingReceiver, filter);
       
       _startRecordingOnOpen = getArguments().getBoolean(StringConst.KEY_START_RECORDING_ON_OPEN);
+      _recordMode = getArguments().getInt(StringConst.KEY_RECORD_MODE);
    }
    
    
@@ -108,7 +112,9 @@ public class RecordPanelFragment extends Fragment
       
       Calendar calendar = Calendar.getInstance();
       String currentDateStr = DateFormatUtils.format(calendar, "yyyyMMdd_HHmmss");
-      File file = new File(path + File.separator + "voice_" + currentDateStr + ".m4a");
+      
+      String prefix = _recordMode == NumberConst.RECORD_MODE_NORMAL ? "voice_" : "drop_";
+      File file = new File(path + File.separator + prefix + currentDateStr + ".m4a");
       
       try
       {
@@ -139,11 +145,33 @@ public class RecordPanelFragment extends Fragment
          PreferenceUtil.putIsRecording(true);
          _chronometer.setBase(SystemClock.elapsedRealtime());
          _chronometer.start();
+         
+         if (_recordMode == NumberConst.RECORD_MODE_DROP)
+            autoStopWhenDropMode();
       }
       catch (Exception e)
       {
          e.printStackTrace();
       }
+   }
+   
+   
+   // 추락 모드에서는 자동으로 15초 후에 종료
+   private void autoStopWhenDropMode()
+   {
+      PreferenceUtil.putIsDropModeRecording(true);
+      Runnable runn = new Runnable()
+      {
+         @Override
+         public void run()
+         {
+            if (PreferenceUtil.isDropModeRecording())
+               stopDropModeRecord(false);
+         }
+      };
+      
+      Handler handler = new Handler();
+      handler.postDelayed(runn, 15000);
    }
    
    
@@ -177,13 +205,27 @@ public class RecordPanelFragment extends Fragment
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+//         e.printStackTrace();
       }
       
       _btnRecordStop.setEnabled(false);
       _btnRecordStart.setEnabled(true);
       
       getFragmentManager().beginTransaction().remove(this).commit();
+   }
+   
+   
+   /**
+    * 낙하 모드 녹음 중지
+    * 
+    * @param $stopByUser
+    *           사용자가 중단시켰는가
+    */
+   private void stopDropModeRecord(boolean $stopByUser)
+   {
+      stopRecord();
+      PreferenceUtil.putIsDropModeRecording(false);
+      Log.i("RecordPanelFragment.java | stopDropMode", "|" + "###########################################" + "|");
    }
    
    public interface RecordEndCallback
@@ -202,7 +244,13 @@ public class RecordPanelFragment extends Fragment
       @Override
       public void onReceive(Context context, Intent intent)
       {
-         stopRecord();
+         if (!PreferenceUtil.isRecording())
+            return;
+         
+         if (PreferenceUtil.isDropModeRecording())
+            stopDropModeRecord(true);
+         else
+            stopRecord();
       }
    };
 }

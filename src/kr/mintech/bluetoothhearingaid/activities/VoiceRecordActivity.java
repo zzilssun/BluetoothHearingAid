@@ -6,6 +6,7 @@ import java.util.List;
 import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.activities.RecordPanelFragment.RecordEndCallback;
 import kr.mintech.bluetoothhearingaid.adapters.FilesAdapter;
+import kr.mintech.bluetoothhearingaid.consts.NumberConst;
 import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
@@ -47,22 +48,16 @@ public class VoiceRecordActivity extends FragmentActivity
       listFile.setAdapter(_filesAdapter);
       listFile.setOnItemClickListener(onFilecliClickListener);
       
-      String action = getPackageName() + "." + StringConst.KEY_TOGGLE_RECORD_STATE;
-      Log.i("VoiceRecordActivity.java | onCreate", "|" + action + "|" + getIntent().getAction());
-      if (action.equals(getIntent().getAction()))
-         toggleRecordState();
+      toggleRecordState(getIntent());
    }
    
    
    @Override
-   protected void onNewIntent(Intent intent)
+   protected void onNewIntent(Intent $intent)
    {
-      super.onNewIntent(intent);
+      super.onNewIntent($intent);
       
-      String action = getPackageName() + "." + StringConst.KEY_TOGGLE_RECORD_STATE;
-      Log.i("VoiceRecordActivity.java | onNewIntent", "|" + action + "|" + getIntent().getAction());
-      if (action.equals(intent.getAction()))
-         toggleRecordState();
+      toggleRecordState($intent);
    }
    
    
@@ -92,16 +87,24 @@ public class VoiceRecordActivity extends FragmentActivity
    }
    
    
-   private void toggleRecordState()
+   private void toggleRecordState(Intent $intent)
    {
+      String action = getPackageName() + "." + StringConst.KEY_TOGGLE_RECORD_STATE;
+      Log.i("VoiceRecordActivity.java | toggleRecordState", "|" + action + "|" + $intent.getAction());
+      if (!action.equals($intent.getAction()))
+         return;
+      
       Log.i("MainActivity.java | toggleRecordState", "| recording? " + PreferenceUtil.isRecording() + "|");
       if (PreferenceUtil.isRecording())
       {
-         Intent intent = new Intent(StringConst.STOP_RECORING);
+         Intent intent = new Intent(StringConst.ACTION_STOP_RECORDING);
          sendBroadcast(intent);
       }
       else
-         startRecord(true);
+      {
+         int recordMode = $intent.getIntExtra(StringConst.KEY_RECORD_MODE, NumberConst.RECORD_MODE_NORMAL);
+         startRecord(true, recordMode);
+      }
    }
    
    
@@ -122,13 +125,33 @@ public class VoiceRecordActivity extends FragmentActivity
    }
    
    
-   // 녹음 메뉴 클릭
-   private void startRecord(boolean $startRecoringImmediate)
+   /**
+    * 녹음 시작
+    * 
+    * @param $startRecordingImmediate
+    *           녹음을 곧바로 시작할 것인가
+    */
+   private void startRecord(boolean $startRecordingImmediate)
    {
-      Log.i("VoiceRecordActivity.java | startRecord", "|" + "start record" + "|");
+      startRecord($startRecordingImmediate, NumberConst.RECORD_MODE_NORMAL);
+   }
+   
+   
+   /**
+    * 녹음 시작
+    * 
+    * @param $startRecordingImmediate
+    *           녹음을 곧바로 시작할 것인가
+    * @param $recordMode
+    *           NumberConst.RECORD_MODE_NORMAL=일상적인 녹음
+    */
+   private void startRecord(boolean $startRecordingImmediate, int $recordMode)
+   {
+      Log.i("VoiceRecordActivity.java | startRecord", "|" + "show record panel" + "|");
       
       Bundle bundle = new Bundle();
-      bundle.putBoolean(StringConst.KEY_START_RECORDING_ON_OPEN, $startRecoringImmediate);
+      bundle.putBoolean(StringConst.KEY_START_RECORDING_ON_OPEN, $startRecordingImmediate);
+      bundle.putInt(StringConst.KEY_RECORD_MODE, $recordMode);
       
       RecordPanelFragment panel = new RecordPanelFragment();
       panel.setOnRecordEndCallback(recordEndCallback);

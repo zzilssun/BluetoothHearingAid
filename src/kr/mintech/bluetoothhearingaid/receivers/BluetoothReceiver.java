@@ -30,10 +30,10 @@ public class BluetoothReceiver extends BroadcastReceiver
          {
             Log.i("BluetoothReceiver.java | onReceive", "|" + currentKey + "|");
             
-            // 원래는 KeyEvent.KEYCODE_MEDIA_RECORD
-            if (currentKey == KeyEvent.KEYCODE_MEDIA_PREVIOUS)
+            if (currentKey == KeyEvent.KEYCODE_MEDIA_PREVIOUS || currentKey == KeyEvent.KEYCODE_MEDIA_NEXT)
             {
                Intent intent = new Intent($context.getPackageName() + "." + StringConst.KEY_TOGGLE_RECORD_STATE);
+               intent.putExtra(StringConst.KEY_RECORD_MODE, currentKey);// PREVIOUS=nomal, NEXT=drop
                intent.setClass($context, VoiceRecordActivity.class);
                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                $context.startActivity(intent);
@@ -42,7 +42,7 @@ public class BluetoothReceiver extends BroadcastReceiver
             {
                Log.i("BluetoothReceiver.java | onReceive", "|" + "forword" + "|");
                
-               Intent intent = new Intent(StringConst.FORWORD_BROADCAST);
+               Intent intent = new Intent(StringConst.ACTION_FORWORD_BROADCAST);
                intent.putExtra(StringConst.KEY_CODE, currentKey);
                $context.sendBroadcast(intent);
             }
@@ -57,7 +57,7 @@ public class BluetoothReceiver extends BroadcastReceiver
          
          if (volume < lastVolume)
          {
-            Intent intent = new Intent("stop_recording");
+            Intent intent = new Intent(StringConst.ACTION_STOP_RECORDING);
             $context.sendBroadcast(intent);
          }
       }
