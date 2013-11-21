@@ -20,6 +20,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -274,6 +275,15 @@ public class RecordPanelFragment extends Fragment
    
    private void addScheduleToCalendar()
    {
+      String projection[] = { "_id" };
+      Uri calendars = Uri.parse("content://com.android.calendar/calendars");
+      
+      ContentResolver cr = getActivity().getContentResolver();
+      Cursor managedCursor = cr.query(calendars, projection, null, null, null);
+      managedCursor.moveToFirst();
+      String calID = managedCursor.getString(0);
+      managedCursor.close();
+      
       long startMillis = 0;
       
       Calendar beginTime = Calendar.getInstance();
@@ -289,15 +299,13 @@ public class RecordPanelFragment extends Fragment
       Log.i("MainActivity.java | onCreate", "|" + DateFormatUtils.format(startMillis, "yyyy-MM-dd HH:mm:ss") + "|" + startMillis);
       
       // Insert Event
-      ContentResolver cr = getActivity().getContentResolver();
       ContentValues values = new ContentValues();
       TimeZone timeZone = TimeZone.getDefault();
       values.put(CalendarContract.Events.DTSTART, startMillis);
       values.put(CalendarContract.Events.DTEND, startMillis);
       values.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
       values.put(CalendarContract.Events.TITLE, "테스트 일정");
-//      values.put(CalendarContract.Events.DESCRIPTION, "My dog is bored, so we're going on a really long walk!");
-      values.put(CalendarContract.Events.CALENDAR_ID, 3);
+      values.put(CalendarContract.Events.CALENDAR_ID, calID);
       Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
       uri.getLastPathSegment();
    }
