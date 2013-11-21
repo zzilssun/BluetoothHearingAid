@@ -3,6 +3,7 @@ package kr.mintech.bluetoothhearingaid.activities;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.consts.NumberConst;
@@ -11,16 +12,21 @@ import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.provider.CalendarContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -181,6 +187,13 @@ public class RecordPanelFragment extends Fragment
     */
    public void stopRecord()
    {
+      if (_isStoped)
+         return;
+      
+      _isStoped = true;
+      
+      if (!PreferenceUtil.isRecording())
+         return;
       if (PreferenceUtil.isDropModeRecording())
          stopDropModeRecord(true);
       else
@@ -190,14 +203,6 @@ public class RecordPanelFragment extends Fragment
    
    private void stopNomalModeRecord()
    {
-      if (_isStoped)
-         return;
-      
-      _isStoped = true;
-      
-      if (!PreferenceUtil.isRecording())
-         return;
-      
       Log.i("RecordPanelFragment.java | stopRecord", "|" + "stop" + "|" + PreferenceUtil.lastRecordedFileFullPath());
       _chronometer.stop();
       
@@ -229,6 +234,20 @@ public class RecordPanelFragment extends Fragment
       {
          e.printStackTrace();
       }
+      
+      // XXX: 10이상 녹음하면 강제로 일정을 등록해버린다.
+      try
+      {
+         int second = Integer.parseInt(_chronometer.getText().toString().split(":")[1]);
+         if (second > 10)
+         {
+            addScheduleToCalendar();
+         }
+      }
+      catch (Exception e)
+      {
+//         e.printStackTrace();
+      }
    }
    
    
@@ -250,6 +269,37 @@ public class RecordPanelFragment extends Fragment
       // 사용자가 중단 시키지 않았을 때는 sms 보낸 후 전화 걸기
       Intent intent = new Intent(StringConst.ACTION_DROP_MODE_RECORD_END);
       getActivity().sendBroadcast(intent);
+   }
+   
+   
+   private void addScheduleToCalendar()
+   {
+      long startMillis = 0;
+      
+      Calendar beginTime = Calendar.getInstance();
+      long tomorrow = DateUtils.addDays(beginTime.getTime(), +1).getTime();
+      int year = Integer.parseInt(DateFormatUtils.format(tomorrow, "yyyy"));
+      int month = Integer.parseInt(DateFormatUtils.format(tomorrow, "MM")) - 1;
+      int day = Integer.parseInt(DateFormatUtils.format(tomorrow, "dd"));
+      int hour = Integer.parseInt(DateFormatUtils.format(tomorrow, "hhhh"));
+      int minute = Integer.parseInt(DateFormatUtils.format(tomorrow, "mm"));
+      
+      beginTime.set(year, month, day, hour, minute);
+      startMillis = beginTime.getTimeInMillis();
+      Log.i("MainActivity.java | onCreate", "|" + DateFormatUtils.format(startMillis, "yyyy-MM-dd HH:mm:ss") + "|" + startMillis);
+      
+      // Insert Event
+      ContentResolver cr = getActivity().getContentResolver();
+      ContentValues values = new ContentValues();
+      TimeZone timeZone = TimeZone.getDefault();
+      values.put(CalendarContract.Events.DTSTART, startMillis);
+      values.put(CalendarContract.Events.DTEND, startMillis);
+      values.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
+      values.put(CalendarContract.Events.TITLE, "테스트 일정");
+//      values.put(CalendarContract.Events.DESCRIPTION, "My dog is bored, so we're going on a really long walk!");
+      values.put(CalendarContract.Events.CALENDAR_ID, 3);
+      Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+      uri.getLastPathSegment();
    }
    
    public interface RecordEndCallback
