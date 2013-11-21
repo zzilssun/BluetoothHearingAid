@@ -7,6 +7,7 @@
     <string name="voice_record">음성 녹음</string>
     <string name="emergency_call">응급 연락</string>
     <string name="select_person">사람 찾기</string>
-    <string name="sms_content">https://maps.google.com/?q=%s 에서 충격이 발생했습니다.</string>
+    <string name="map_link">https://maps.google.com/?q=%s</string>
+    <string name="sms_content">%s 에서 충격이 발생했습니다.</string>
 
 </resources>

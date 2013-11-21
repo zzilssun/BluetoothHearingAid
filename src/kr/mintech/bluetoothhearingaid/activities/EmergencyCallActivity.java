@@ -10,6 +10,7 @@ import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import kr.mintech.bluetoothhearingaid.utils.LocationManager;
 import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
+import kr.mintech.bluetoothhearingaid.utils.UrlShortenUtil;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -41,6 +42,7 @@ public class EmergencyCallActivity extends Activity
    private SMSAdapter _smsAdapter;
    private LocationManager _locationManager;
    private Location _currentLocation;
+   private String _mapLink;
    
    
    @Override
@@ -135,15 +137,30 @@ public class EmergencyCallActivity extends Activity
    }
    
    
-   private void sendSMS()
+   private void makeShortMapLink()
    {
       Log.i("EmergencyCallActivity.java | sendSMS", "|" + _currentLocation.getLatitude() + "," + _currentLocation.getLongitude());
       
+      Thread thread = new Thread(new Runnable()
+      {
+         @Override
+         public void run()
+         {
+            String location = _currentLocation.getLatitude() + "," + _currentLocation.getLongitude();
+            _mapLink = UrlShortenUtil.shorten(getString(R.string.map_link, location));
+            sendSMS();
+         }
+      });
+      thread.start();
+   }
+   
+   
+   private void sendSMS()
+   {
       ArrayList<Person> people = _smsAdapter.list();
       if (!people.isEmpty())
       {
-         String location = _currentLocation.getLatitude() + "," + _currentLocation.getLongitude();
-         final String message = getString(R.string.sms_content, location);
+         final String message = getString(R.string.sms_content, _mapLink);
          Log.i("EmergencyCallActivity.java | sendSMS", "|" + message + "|");
          
          final PendingIntent sentPI = PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent(SMS_SENT), 0);
@@ -236,7 +253,7 @@ public class EmergencyCallActivity extends Activity
          {
             _currentLocation = $location;
             _locationManager.disconnect();
-            sendSMS();
+            makeShortMapLink();
          }
       }
    };
