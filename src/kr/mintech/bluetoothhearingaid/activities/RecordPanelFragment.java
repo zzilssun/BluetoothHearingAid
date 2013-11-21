@@ -96,6 +96,7 @@ public class RecordPanelFragment extends Fragment
    public void onDestroyView()
    {
       getActivity().unregisterReceiver(stopRecordRecodingReceiver);
+      PreferenceUtil.putIsRecording(false);
       stopRecord();
       super.onDestroyView();
    }
@@ -180,6 +181,15 @@ public class RecordPanelFragment extends Fragment
     */
    public void stopRecord()
    {
+      if (PreferenceUtil.isDropModeRecording())
+         stopDropModeRecord(true);
+      else
+         stopNomalModeRecord();
+   }
+   
+   
+   private void stopNomalModeRecord()
+   {
       if (_isStoped)
          return;
       
@@ -211,7 +221,14 @@ public class RecordPanelFragment extends Fragment
       _btnRecordStop.setEnabled(false);
       _btnRecordStart.setEnabled(true);
       
-      getFragmentManager().beginTransaction().remove(this).commit();
+      try
+      {
+         getFragmentManager().beginTransaction().remove(this).commit();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+      }
    }
    
    
@@ -223,7 +240,7 @@ public class RecordPanelFragment extends Fragment
     */
    private void stopDropModeRecord(boolean $stopByUser)
    {
-      stopRecord();
+      stopNomalModeRecord();
       PreferenceUtil.putIsDropModeRecording(false);
       
       Log.i("RecordPanelFragment.java | stopDropModeRecord", "| drop mode stop by user? " + $stopByUser + "|");
@@ -254,10 +271,7 @@ public class RecordPanelFragment extends Fragment
          if (!PreferenceUtil.isRecording())
             return;
          
-         if (PreferenceUtil.isDropModeRecording())
-            stopDropModeRecord(true);
-         else
-            stopRecord();
+         stopRecord();
       }
    };
 }

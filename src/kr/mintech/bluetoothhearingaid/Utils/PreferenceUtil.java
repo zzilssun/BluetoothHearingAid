@@ -10,6 +10,7 @@ public class PreferenceUtil extends BasePreferenceUtil
    private static final String CALL_RECEIVER = "CALL_RECEIVER";
    private static final String SMS_RECEIVER = "SMS_RECEIVER";
    private static final String LAST_VOLUME = "LAST_VOLUME";
+   private static final String GOOGLE_ACCOUNT = "GOOGLE_ACCOUNT";
    
    
    /**
@@ -148,6 +149,29 @@ public class PreferenceUtil extends BasePreferenceUtil
    public static int lastVolume()
    {
       return get(LAST_VOLUME, 100);
+   }
+   
+   
+   /**
+    * 구글 드라이브 업로드에 사용할 구글 계정
+    * 
+    * @param $account
+    *           asdf@gmail.com
+    */
+   public static void putGoogleAccount(String $account)
+   {
+      put(GOOGLE_ACCOUNT, $account);
+   }
+   
+   
+   /**
+    * 구글 드라이브 업로드에 사용할 구글 계정
+    * 
+    * @return
+    */
+   public static String googleAccount()
+   {
+      return get(GOOGLE_ACCOUNT);
    }
    
 }

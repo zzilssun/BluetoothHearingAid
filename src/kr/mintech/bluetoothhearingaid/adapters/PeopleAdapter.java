@@ -102,6 +102,7 @@ public class PeopleAdapter extends BaseAdapter
          holder.name = (TextView) $convertView.findViewById(R.id.text_name);
          holder.phone = (TextView) $convertView.findViewById(R.id.text_phone);
          holder.selected = (CheckBox) $convertView.findViewById(R.id.checkbox);
+         holder.selected.setVisibility(View.VISIBLE);
          
          $convertView.setTag(holder);
       }

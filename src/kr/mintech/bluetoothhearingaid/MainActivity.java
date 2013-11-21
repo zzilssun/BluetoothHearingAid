@@ -2,15 +2,15 @@ package kr.mintech.bluetoothhearingaid;
 
 import kr.mintech.bluetoothhearingaid.activities.EmergencyCallActivity;
 import kr.mintech.bluetoothhearingaid.activities.VoiceRecordActivity;
+import kr.mintech.bluetoothhearingaid.bases.BaseDriveActivity;
 import kr.mintech.bluetoothhearingaid.services.MediaButtonMonitorService;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends FragmentActivity
+public class MainActivity extends BaseDriveActivity
 {
    @Override
    protected void onCreate(Bundle savedInstanceState)
