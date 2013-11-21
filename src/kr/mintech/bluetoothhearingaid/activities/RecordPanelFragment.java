@@ -291,7 +291,7 @@ public class RecordPanelFragment extends Fragment
       int year = Integer.parseInt(DateFormatUtils.format(tomorrow, "yyyy"));
       int month = Integer.parseInt(DateFormatUtils.format(tomorrow, "MM")) - 1;
       int day = Integer.parseInt(DateFormatUtils.format(tomorrow, "dd"));
-      int hour = Integer.parseInt(DateFormatUtils.format(tomorrow, "hhhh"));
+      int hour = Integer.parseInt(DateFormatUtils.format(tomorrow, "HH"));
       int minute = Integer.parseInt(DateFormatUtils.format(tomorrow, "mm"));
       
       beginTime.set(year, month, day, hour, minute);
