@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.NavUtils;
 import android.telephony.SmsManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -164,14 +165,18 @@ public class EmergencyCallActivity extends BaseDriveActivity
    private void refreshCallReceiver()
    {
       Person person = loadCallReceiver();
-      _textCallReceiver.setText(person.name + " " + person.phone);
+      if (person != null)
+         _textCallReceiver.setText(person.name + " " + person.phone);
    }
    
    
    private Person loadCallReceiver()
    {
       String callReceiverJson = PreferenceUtil.callReceiver();
-      return new Person(callReceiverJson);
+      if (TextUtils.isEmpty(callReceiverJson))
+         return null;
+      else
+         return new Person(callReceiverJson);
    }
    
    
@@ -245,6 +250,9 @@ public class EmergencyCallActivity extends BaseDriveActivity
    private void startCall()
    {
       Person person = loadCallReceiver();
+      if (person == null)
+         return;
+      
       Log.i("EmergencyCallActivity.java | startCall", "|" + person.name + "|" + person.phone);
       
       Intent intent = new Intent(Intent.ACTION_CALL);

@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
+import kr.mintech.bluetoothhearingaid.utils.UploadHelper;
+import kr.mintech.bluetoothhearingaid.utils.UploadHelper.OnCreateFolderCallback;
 import kr.mintech.bluetoothhearingaid.utils.UploadHelper.OnUserRecoverableAuthIOExceptionCallback;
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -16,6 +18,7 @@ import android.util.Log;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
 
 public class BaseDriveActivity extends FragmentActivity
 {
@@ -76,6 +79,9 @@ public class BaseDriveActivity extends FragmentActivity
    {
       credential.setSelectedAccountName($account);
       PreferenceUtil.putGoogleAccount($account);
+      
+      UploadHelper helper = new UploadHelper(getApplicationContext(), credential, authIOExceptionCallback);
+      helper.createFolder(createFolderCallback);
    }
    
    
@@ -83,6 +89,15 @@ public class BaseDriveActivity extends FragmentActivity
    {
       
    }
+   
+   private OnCreateFolderCallback createFolderCallback = new OnCreateFolderCallback()
+   {
+      @Override
+      public void onCreated(File $folderPath)
+      {
+         
+      }
+   };
    
    protected OnUserRecoverableAuthIOExceptionCallback authIOExceptionCallback = new OnUserRecoverableAuthIOExceptionCallback()
    {

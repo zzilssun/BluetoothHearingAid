@@ -34,7 +34,6 @@
         android:id="@+id/text_call_receiver"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="진창훈 010-9219-3959"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <LinearLayout

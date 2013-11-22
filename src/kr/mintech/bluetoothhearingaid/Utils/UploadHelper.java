@@ -26,6 +26,7 @@ public class UploadHelper
    private OnUserRecoverableAuthIOExceptionCallback _authExceptionCallback;
    private Context _context;
    private OnUploadEndCallback _uploadCallback;
+   private OnCreateFolderCallback _createFolderCallback;
    
    
    public UploadHelper(Context $context, GoogleAccountCredential $credential, OnUserRecoverableAuthIOExceptionCallback $callback)
@@ -37,30 +38,45 @@ public class UploadHelper
    }
    
    
-   public void upload(final String $filePath, final OnUploadEndCallback $uploadCallback)
+   public void createFolder(OnCreateFolderCallback $callback)
    {
-      _uploadCallback = $uploadCallback;
-      uploadTask.execute($filePath);
-//      Thread t = new Thread(new Runnable()
-//      {
-//         @Override
-//         public void run()
-//         {
-      
-//         }
-//      });
-//      t.start();
+      _createFolderCallback = $callback;
+      createFolerTask.execute();
    }
    
    
-   private String uploadToDrive(String $filePath)
+   private File createFolder()
    {
-      String result = null;
+      File result = null;
+      
       try
       {
-         boolean hasFolder = false;
-         File targetFolder = null;
+         File folder = folderPath();
          
+         if (folder == null)
+         {
+            File folderBody = new File();
+            folderBody.setTitle(_context.getString(R.string.app_name));
+            folderBody.setMimeType("application/vnd.google-apps.folder");
+            result = _service.files().insert(folderBody).execute();
+            Log.i("UploadHelper.java | createFolder", "|" + result + "|");
+         }
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+      }
+      
+      return result;
+   }
+   
+   
+   private File folderPath()
+   {
+      File result = null;
+      
+      try
+      {
          // 폴더 목록 검색
          Files.List request = _service.files().list().setQ("mimeType='application/vnd.google-apps.folder' and trashed=false");
          FileList files = request.execute();
@@ -70,20 +86,34 @@ public class UploadHelper
             // 원하는 폴더 있는지 검사
             if (folder.getTitle().equals(_context.getString(R.string.app_name)))
             {
-               hasFolder = true;
-               targetFolder = folder;
+               result = folder;
                break;
             }
          }
-         
-         // 원하는 폴더 없으면 새로 만들기
-         if (!hasFolder)
-         {
-            File folderBody = new File();
-            folderBody.setTitle(_context.getString(R.string.app_name));
-            folderBody.setMimeType("application/vnd.google-apps.folder");
-            targetFolder = _service.files().insert(folderBody).execute();
-         }
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+      }
+      
+      return result;
+   }
+   
+   
+   public void upload(final String $filePath, final OnUploadEndCallback $uploadCallback)
+   {
+      _uploadCallback = $uploadCallback;
+      uploadTask.execute($filePath);
+   }
+   
+   
+   private String uploadToDrive(String $filePath)
+   {
+      String result = null;
+      try
+      {
+         File targetFolder = folderPath();
+         Log.i("UploadHelper.java | uploadToDrive", "|" + targetFolder + "|");
          
          // 파일 정보 세팅
          java.io.File fileContent = new java.io.File($filePath);
@@ -131,6 +161,21 @@ public class UploadHelper
       return new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), credential).build();
    }
    
+   private AsyncTask<String, Integer, File> createFolerTask = new AsyncTask<String, Integer, File>()
+   {
+      @Override
+      protected File doInBackground(String... params)
+      {
+         return createFolder();
+      }
+      
+      
+      protected void onPostExecute(File result)
+      {
+         _createFolderCallback.onCreated(result);
+      };
+   };
+   
    private AsyncTask<String, Integer, String> uploadTask = new AsyncTask<String, Integer, String>()
    {
       @Override
@@ -144,12 +189,16 @@ public class UploadHelper
       {
          _uploadCallback.onUploaded(result);
       };
-      
    };
    
    public interface OnUserRecoverableAuthIOExceptionCallback
    {
       public void onUserRecoverableAuthIOException(UserRecoverableAuthIOException e);
+   }
+   
+   public interface OnCreateFolderCallback
+   {
+      public void onCreated(File $folderPath);
    }
    
    public interface OnUploadEndCallback
