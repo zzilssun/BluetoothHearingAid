@@ -210,7 +210,7 @@ public class EmergencyCallActivity extends Activity
          return;
       
 //         final String message = getString(R.string.sms_content, _mapLink, _audioLink);
-      final String message = getString(R.string.sms_content_for_test, "http://goo.gl/o2vWtk");
+      final String message = getString(R.string.sms_content_for_test);
       Log.i("EmergencyCallActivity.java | sendSMS", "|" + message + "|");
       
       final PendingIntent sentPI = PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent(SMS_SENT), 0);
