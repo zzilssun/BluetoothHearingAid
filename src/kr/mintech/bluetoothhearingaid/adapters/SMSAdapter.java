@@ -33,6 +33,7 @@ public class SMSAdapter extends BaseAdapter
       _items.clear();
       
       String jsonStr = PreferenceUtil.smsReceiver();
+      
       ArrayList<String> jsonArray = JsonUtil.array(jsonStr);
       
       for (String json : jsonArray)

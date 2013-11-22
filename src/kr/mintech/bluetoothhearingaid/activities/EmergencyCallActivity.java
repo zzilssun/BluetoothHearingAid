@@ -4,24 +4,18 @@ import java.util.ArrayList;
 
 import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.adapters.SMSAdapter;
-import kr.mintech.bluetoothhearingaid.bases.BaseDriveActivity;
 import kr.mintech.bluetoothhearingaid.beans.Person;
 import kr.mintech.bluetoothhearingaid.consts.NumberConst;
 import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
-import kr.mintech.bluetoothhearingaid.utils.LocationManager;
 import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
-import kr.mintech.bluetoothhearingaid.utils.UploadHelper;
-import kr.mintech.bluetoothhearingaid.utils.UploadHelper.OnUploadEndCallback;
-import kr.mintech.bluetoothhearingaid.utils.UrlShortenUtil;
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.location.Location;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.NavUtils;
@@ -34,9 +28,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
-
-public class EmergencyCallActivity extends BaseDriveActivity
+public class EmergencyCallActivity extends Activity
 {
    private static final String SMS_SENT = "SMS_SENT";
    private static final String SMS_DELIVERED = "SMS_DELIVERED";
@@ -44,12 +36,13 @@ public class EmergencyCallActivity extends BaseDriveActivity
    private TextView _textCallReceiver;
    private Button _btnSelectCall, _btnSelectSMS;
    private SMSAdapter _smsAdapter;
-   private LocationManager _locationManager;
-   private Location _currentLocation;
-   private String _mapLink;
-   private String _audioLink;
-   private UploadHelper _helper;
    
+   
+//   private LocationManager _locationManager;
+//   private Location _currentLocation;
+//   private String _mapLink;
+//   private String _audioLink;
+//   private UploadHelper _helper;
    
    @Override
    protected void onCreate(Bundle savedInstanceState)
@@ -88,7 +81,7 @@ public class EmergencyCallActivity extends BaseDriveActivity
       ListView listSMS = (ListView) findViewById(R.id.list_sms);
       listSMS.setAdapter(_smsAdapter);
       
-      _locationManager = new LocationManager(getApplicationContext(), locationChangedListener);
+//      _locationManager = new LocationManager(getApplicationContext(), locationChangedListener);
       
       checkDropModeRecording(getIntent());
    }
@@ -106,7 +99,7 @@ public class EmergencyCallActivity extends BaseDriveActivity
    protected void onStop()
    {
       super.onStop();
-      _locationManager.disconnect();
+//      _locationManager.disconnect();
       
       try
       {
@@ -186,63 +179,65 @@ public class EmergencyCallActivity extends BaseDriveActivity
       if (!StringConst.ACTION_DROP_MODE_RECORD_END.equals(action))
          return;
       
-      _locationManager.startLocationFind();
-   }
-   
-   
-   private void makeShortMapLink()
-   {
-      Log.i("EmergencyCallActivity.java | sendSMS", "|" + _currentLocation.getLatitude() + "," + _currentLocation.getLongitude());
-      
-      String location = _currentLocation.getLatitude() + "," + _currentLocation.getLongitude();
-      mapLinkShortenTask.execute(getString(R.string.map_link, location));
-   }
-   
-   
-   @Override
-   protected void uploadToGoogleDrive()
-   {
-      super.uploadToGoogleDrive();
-      
-      String filePath = PreferenceUtil.lastRecordedFileFullPath();
-      _helper = new UploadHelper(getApplicationContext(), credential, authIOExceptionCallback);
-      _helper.upload(filePath, onUploadEndCallback);
-   }
-   
-   
-   private void sendSMS()
-   {
+//      _locationManager.startLocationFind();
+//   }
+//   
+//   
+//   private void makeShortMapLink()
+//   {
+//      Log.i("EmergencyCallActivity.java | sendSMS", "|" + _currentLocation.getLatitude() + "," + _currentLocation.getLongitude());
+//      
+//      String location = _currentLocation.getLatitude() + "," + _currentLocation.getLongitude();
+//      mapLinkShortenTask.execute(getString(R.string.map_link, location));
+//   }
+//   
+//   
+//   @Override
+//   protected void uploadToGoogleDrive()
+//   {
+//      super.uploadToGoogleDrive();
+//      
+//      String filePath = PreferenceUtil.lastRecordedFileFullPath();
+//      _helper = new UploadHelper(getApplicationContext(), credential, authIOExceptionCallback);
+//      _helper.upload(filePath, onUploadEndCallback);
+//   }
+//   
+//   
+//   private void sendSMS()
+//   {
       ArrayList<Person> people = _smsAdapter.list();
-      if (!people.isEmpty())
+      if (people.isEmpty())
+         return;
+      
+//         final String message = getString(R.string.sms_content, _mapLink, _audioLink);
+      final String message = getString(R.string.sms_content_for_test, "http://goo.gl/o2vWtk");
+      Log.i("EmergencyCallActivity.java | sendSMS", "|" + message + "|");
+      
+      final PendingIntent sentPI = PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent(SMS_SENT), 0);
+      final PendingIntent deliveryPI = PendingIntent.getBroadcast(getApplicationContext(), 1, new Intent(SMS_DELIVERED), 1);
+      
+      registerReceiver(sentReceiver, new IntentFilter(SMS_SENT));
+      registerReceiver(deliveryReceiver, new IntentFilter(SMS_DELIVERED));
+      
+      final SmsManager sms = SmsManager.getDefault();
+      
+      for (int i = 0; i < people.size(); i++)
       {
-         final String message = getString(R.string.sms_content, _mapLink, _audioLink);
-         Log.i("EmergencyCallActivity.java | sendSMS", "|" + message + "|");
+         final Person person = people.get(i);
          
-         final PendingIntent sentPI = PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent(SMS_SENT), 0);
-         final PendingIntent deliveryPI = PendingIntent.getBroadcast(getApplicationContext(), 1, new Intent(SMS_DELIVERED), 1);
-         
-         registerReceiver(sentReceiver, new IntentFilter(SMS_SENT));
-         registerReceiver(deliveryReceiver, new IntentFilter(SMS_DELIVERED));
-         
-         final SmsManager sms = SmsManager.getDefault();
-         
-         for (int i = 0; i < people.size(); i++)
+         Runnable runn = new Runnable()
          {
-            final Person person = people.get(i);
-            
-            Runnable runn = new Runnable()
+            @Override
+            public void run()
             {
-               @Override
-               public void run()
-               {
-                  Log.i("EmergencyCallActivity.java | run", "|send sms : " + person.name + "|" + person.phone);
-                  sms.sendTextMessage(person.phone, null, message, sentPI, deliveryPI);
-               }
-            };
-            Handler handler = new Handler();
-            handler.postDelayed(runn, i * 5000);
-         }
+               Log.i("EmergencyCallActivity.java | run", "|send sms : " + person.name + "|" + person.phone);
+               sms.sendTextMessage(person.phone, null, message, sentPI, deliveryPI);
+            }
+         };
+         Handler handler = new Handler();
+         handler.postDelayed(runn, i * 5000);
       }
+      
       startCall();
    }
    
@@ -260,19 +255,19 @@ public class EmergencyCallActivity extends BaseDriveActivity
       startActivity(intent);
    }
    
-   private OnLocationChangedListener locationChangedListener = new OnLocationChangedListener()
-   {
-      @Override
-      public void onLocationChanged(Location $location)
-      {
-         if ($location != null)
-         {
-            _currentLocation = $location;
-            _locationManager.disconnect();
-            makeShortMapLink();
-         }
-      }
-   };
+//   private OnLocationChangedListener locationChangedListener = new OnLocationChangedListener()
+//   {
+//      @Override
+//      public void onLocationChanged(Location $location)
+//      {
+//         if ($location != null)
+//         {
+//            _currentLocation = $location;
+//            _locationManager.disconnect();
+//            makeShortMapLink();
+//         }
+//      }
+//   };
    
    private BroadcastReceiver sentReceiver = new BroadcastReceiver()
    {
@@ -330,40 +325,40 @@ public class EmergencyCallActivity extends BaseDriveActivity
       }
    };
    
-   private AsyncTask<String, Integer, String> mapLinkShortenTask = new AsyncTask<String, Integer, String>()
-   {
-      @Override
-      protected String doInBackground(String... params)
-      {
-         return UrlShortenUtil.shorten(params[0]);
-      }
-      
-      
-      protected void onPostExecute(String result)
-      {
-         _mapLink = result;
-         Log.i("EmergencyCallActivity.java | map link task", "|" + _mapLink + "|");
-         uploadToGoogleDrive();
-      };
-      
-   };
+//   private AsyncTask<String, Integer, String> mapLinkShortenTask = new AsyncTask<String, Integer, String>()
+//   {
+//      @Override
+//      protected String doInBackground(String... params)
+//      {
+//         return UrlShortenUtil.shorten(params[0]);
+//      }
+//      
+//      
+//      protected void onPostExecute(String result)
+//      {
+//         _mapLink = result;
+//         Log.i("EmergencyCallActivity.java | map link task", "|" + _mapLink + "|");
+//         uploadToGoogleDrive();
+//      };
+//      
+//   };
    
-   private OnUploadEndCallback onUploadEndCallback = new OnUploadEndCallback()
-   {
-      @Override
-      public void onUploaded(String $url)
-      {
-         _audioLink = $url;
-         Log.i("EmergencyCallActivity.java | upload task", "|" + _audioLink + "|");
-         sendSMS();
-      }
-      
-      
-      @Override
-      public void onUploadFail()
-      {
-         
-      }
-   };
+//   private OnUploadEndCallback onUploadEndCallback = new OnUploadEndCallback()
+//   {
+//      @Override
+//      public void onUploaded(String $url)
+//      {
+//         _audioLink = $url;
+//         Log.i("EmergencyCallActivity.java | upload task", "|" + _audioLink + "|");
+//         sendSMS();
+//      }
+//      
+//      
+//      @Override
+//      public void onUploadFail()
+//      {
+//         
+//      }
+//   };
    
 }

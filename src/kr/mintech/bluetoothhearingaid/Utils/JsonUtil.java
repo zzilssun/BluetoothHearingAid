@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.text.TextUtils;
+
 public class JsonUtil
 {
    /**
@@ -87,6 +89,9 @@ public class JsonUtil
    public static ArrayList<String> array(String $json)
    {
       ArrayList<String> result = new ArrayList<String>();
+      
+      if (TextUtils.isEmpty($json))
+         return result;
       
       try
       {
