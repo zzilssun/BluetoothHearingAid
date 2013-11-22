@@ -87,6 +87,14 @@ public class SelectPersonActivity extends Activity
             checkResult();
             finish();
          }
+         else
+         {
+            if (_peopleAdapter.checkedPeople().size() >= 5)
+            {
+               checkResult();
+               finish();
+            }
+         }
       }
    };
 }
