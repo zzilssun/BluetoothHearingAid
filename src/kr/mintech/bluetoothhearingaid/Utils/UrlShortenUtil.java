@@ -1,132 +1,67 @@
 package kr.mintech.bluetoothhearingaid.utils;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Scanner;
+import java.io.BufferedReader;
 
-import com.google.gson.Gson;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
+
+import android.util.Log;
 
 public class UrlShortenUtil
 {
    private static final String URL_GOOGL_SERVICE = "https://www.googleapis.com/urlshortener/v1/url";
-   private static Gson gson = new Gson();
    
    
-   public static String shorten(String longUrl)
+   public static String shorten(String $longUrl)
    {
-      String result = new String();
-      GsonGooGl gsonGooGl = new GsonGooGl(longUrl);
+      DefaultHttpClient client = new DefaultHttpClient();
+      String result = null;
+      BufferedReader reader = null;
       
       try
       {
-         URL url = new URL(URL_GOOGL_SERVICE);
+         HttpPost kRequest = new HttpPost(URL_GOOGL_SERVICE);
+         kRequest.setHeader("Content-Type", "application/json");
          
-         URLConnection urlConn = url.openConnection();
-         urlConn.setDoInput(true); // Let the run-time system (RTS) know that we want input.
-         urlConn.setDoOutput(true); // Let the RTS know that we want to do output.
-         urlConn.setUseCaches(false); // No caching, we want the real thing.
-         urlConn.setRequestProperty("Content-Type", "application/json"); // Specify the content type.
+         JSONObject longUrlJson = new JSONObject();
+         longUrlJson.put("longUrl", $longUrl);
          
-         DataOutputStream printout = new DataOutputStream(urlConn.getOutputStream()); // Send POST output.
-         String content = gson.toJson(gsonGooGl);
-         printout.writeBytes(content);
-         printout.flush();
-         printout.close();
+         StringEntity kStringEntity = new StringEntity(longUrlJson.toString(), HTTP.UTF_8);
          
-         DataInputStream input = new DataInputStream(urlConn.getInputStream()); // Get response data.
+         kRequest.setEntity(kStringEntity);
          
-         Scanner sc = new Scanner(input);
-         while (sc.hasNext())
+         HttpResponse kResponse = client.execute(kRequest);
+         String jsonResult = EntityUtils.toString(kResponse.getEntity());
+         
+         result = JsonUtil.value(jsonResult, "id");
+         Log.i("UrlShortenUtil.java | shorten", "|" + $longUrl + " => " + result + "|");
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+      }
+      finally
+      {
+         if (reader != null)
          {
-            result += sc.next();
+            try
+            {
+               reader.close();
+            }
+            catch (Exception e)
+            {
+               e.printStackTrace();
+            }
          }
          
-         GooGlResult gooGlResult = gson.fromJson(result, GooGlResult.class);
-         
-         return gooGlResult.getId();
+         client.getConnectionManager().closeExpiredConnections();
       }
-      catch (Exception ex)
-      {
-         System.out.println(ex);
-         return null;
-      }
+      
+      return result;
    }
-   
-}
-
-class GsonGooGl
-{
-   public GsonGooGl()
-   {
-   }
-   
-   
-   public GsonGooGl(String longUrl)
-   {
-      this.longUrl = longUrl;
-   }
-   
-   private String longUrl;
-   
-   
-   public String getLongUrl()
-   {
-      return longUrl;
-   }
-   
-   
-   public void setLongUrl(String longUrl)
-   {
-      this.longUrl = longUrl;
-   }
-}
-
-class GooGlResult
-{
-   public GooGlResult()
-   {
-   }
-   
-   private String kind;
-   private String id;
-   private String longUrl;
-   
-   
-   public String getKind()
-   {
-      return kind;
-   }
-   
-   
-   public void setKind(String kind)
-   {
-      this.kind = kind;
-   }
-   
-   
-   public String getId()
-   {
-      return id;
-   }
-   
-   
-   public void setId(String id)
-   {
-      this.id = id;
-   }
-   
-   
-   public String getLongUrl()
-   {
-      return longUrl;
-   }
-   
-   
-   public void setLongUrl(String longUrl)
-   {
-      this.longUrl = longUrl;
-   }
-   
 }

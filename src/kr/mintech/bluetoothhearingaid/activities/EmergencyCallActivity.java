@@ -8,14 +8,18 @@ import kr.mintech.bluetoothhearingaid.beans.Person;
 import kr.mintech.bluetoothhearingaid.consts.NumberConst;
 import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
+import kr.mintech.bluetoothhearingaid.utils.LocationManager;
 import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
+import kr.mintech.bluetoothhearingaid.utils.UrlShortenUtil;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.NavUtils;
@@ -27,6 +31,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
 
 public class EmergencyCallActivity extends Activity
 {
@@ -37,11 +44,13 @@ public class EmergencyCallActivity extends Activity
    private Button _btnSelectCall, _btnSelectSMS;
    private SMSAdapter _smsAdapter;
    
+   private LocationManager _locationManager;
+   private Location _currentLocation;
    
-//   private LocationManager _locationManager;
-//   private Location _currentLocation;
-//   private String _mapLink;
-//   private String _audioLink;
+   private String _mapLink = "";
+//   private String _audioLink = "";
+   
+   
 //   private UploadHelper _helper;
    
    @Override
@@ -81,7 +90,7 @@ public class EmergencyCallActivity extends Activity
       ListView listSMS = (ListView) findViewById(R.id.list_sms);
       listSMS.setAdapter(_smsAdapter);
       
-//      _locationManager = new LocationManager(getApplicationContext(), locationChangedListener);
+      _locationManager = new LocationManager(getApplicationContext(), locationChangedListener);
       
       checkDropModeRecording(getIntent());
    }
@@ -99,7 +108,7 @@ public class EmergencyCallActivity extends Activity
    protected void onStop()
    {
       super.onStop();
-//      _locationManager.disconnect();
+      _locationManager.disconnect();
       
       try
       {
@@ -179,17 +188,19 @@ public class EmergencyCallActivity extends Activity
       if (!StringConst.ACTION_DROP_MODE_RECORD_END.equals(action))
          return;
       
-//      _locationManager.startLocationFind();
-//   }
-//   
-//   
-//   private void makeShortMapLink()
-//   {
-//      Log.i("EmergencyCallActivity.java | sendSMS", "|" + _currentLocation.getLatitude() + "," + _currentLocation.getLongitude());
-//      
-//      String location = _currentLocation.getLatitude() + "," + _currentLocation.getLongitude();
-//      mapLinkShortenTask.execute(getString(R.string.map_link, location));
-//   }
+      _locationManager.startLocationFind();
+   }
+   
+   
+   private void makeShortMapLink()
+   {
+      Log.i("EmergencyCallActivity.java | sendSMS", "|" + _currentLocation.getLatitude() + "," + _currentLocation.getLongitude());
+      
+      String location = _currentLocation.getLatitude() + "," + _currentLocation.getLongitude();
+      mapLinkShortenTask.execute(getString(R.string.map_link, location));
+   }
+   
+   
 //   
 //   
 //   @Override
@@ -203,14 +214,15 @@ public class EmergencyCallActivity extends Activity
 //   }
 //   
 //   
-//   private void sendSMS()
-//   {
+   private void sendSMS()
+   {
       ArrayList<Person> people = _smsAdapter.list();
       if (people.isEmpty())
          return;
       
-//         final String message = getString(R.string.sms_content, _mapLink, _audioLink);
-      final String message = getString(R.string.sms_content_for_test);
+      final String message = getString(R.string.sms_content_map, _mapLink);
+//      final String message = getString(R.string.sms_content_full, _mapLink, _audioLink);
+//      final String message = getString(R.string.sms_content_for_test);
       Log.i("EmergencyCallActivity.java | sendSMS", "|" + message + "|");
       
       final PendingIntent sentPI = PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent(SMS_SENT), 0);
@@ -231,6 +243,7 @@ public class EmergencyCallActivity extends Activity
             public void run()
             {
                Log.i("EmergencyCallActivity.java | run", "|send sms : " + person.name + "|" + person.phone);
+               Toast.makeText(getApplicationContext(), "send : " + person.name + " " + person.phone, Toast.LENGTH_SHORT).show();
                sms.sendTextMessage(person.phone, null, message, sentPI, deliveryPI);
             }
          };
@@ -255,19 +268,19 @@ public class EmergencyCallActivity extends Activity
       startActivity(intent);
    }
    
-//   private OnLocationChangedListener locationChangedListener = new OnLocationChangedListener()
-//   {
-//      @Override
-//      public void onLocationChanged(Location $location)
-//      {
-//         if ($location != null)
-//         {
-//            _currentLocation = $location;
-//            _locationManager.disconnect();
-//            makeShortMapLink();
-//         }
-//      }
-//   };
+   private OnLocationChangedListener locationChangedListener = new OnLocationChangedListener()
+   {
+      @Override
+      public void onLocationChanged(Location $location)
+      {
+         if ($location != null)
+         {
+            _currentLocation = $location;
+            _locationManager.disconnect();
+            makeShortMapLink();
+         }
+      }
+   };
    
    private BroadcastReceiver sentReceiver = new BroadcastReceiver()
    {
@@ -325,23 +338,23 @@ public class EmergencyCallActivity extends Activity
       }
    };
    
-//   private AsyncTask<String, Integer, String> mapLinkShortenTask = new AsyncTask<String, Integer, String>()
-//   {
-//      @Override
-//      protected String doInBackground(String... params)
-//      {
-//         return UrlShortenUtil.shorten(params[0]);
-//      }
-//      
-//      
-//      protected void onPostExecute(String result)
-//      {
-//         _mapLink = result;
-//         Log.i("EmergencyCallActivity.java | map link task", "|" + _mapLink + "|");
+   private AsyncTask<String, Integer, String> mapLinkShortenTask = new AsyncTask<String, Integer, String>()
+   {
+      @Override
+      protected String doInBackground(String... params)
+      {
+         return UrlShortenUtil.shorten(params[0]);
+      }
+      
+      
+      protected void onPostExecute(String result)
+      {
+         _mapLink = result;
+         Log.i("EmergencyCallActivity.java | map link task", "|" + _mapLink + "|");
 //         uploadToGoogleDrive();
-//      };
-//      
-//   };
+         sendSMS();
+      };
+   };
    
 //   private OnUploadEndCallback onUploadEndCallback = new OnUploadEndCallback()
 //   {
