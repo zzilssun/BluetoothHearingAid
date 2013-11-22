@@ -4,10 +4,12 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
     tools:context=".MainActivity" >
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical" >
@@ -16,6 +18,7 @@
             android:id="@+id/btn_voice_record"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:minHeight="100dp"
             android:text="@string/voice_record"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -23,6 +26,8 @@
             android:id="@+id/btn_emergency_call"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:minHeight="100dp"
             android:text="@string/emergency_call"
             android:textAppearance="?android:attr/textAppearanceLarge" />
     </LinearLayout>
