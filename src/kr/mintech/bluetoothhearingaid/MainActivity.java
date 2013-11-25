@@ -33,7 +33,7 @@ public class MainActivity extends Activity
          }
       });
       
-      Button btnEmergencyCall = (Button) findViewById(R.id.btn_emergency_call);
+      Button btnEmergencyCall = (Button) findViewById(R.id.btn_emergency_call_config);
       btnEmergencyCall.setOnClickListener(new View.OnClickListener()
       {
          @Override
