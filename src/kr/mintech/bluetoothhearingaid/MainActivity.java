@@ -6,7 +6,10 @@ import kr.mintech.bluetoothhearingaid.services.MediaButtonMonitorService;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -17,6 +20,8 @@ public class MainActivity extends Activity
    {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.act_main);
+      
+      Log.i("MainActivity.java | onCreate", "|" + "$$$$$$$$$$$$$$$$$$$$$$$$$$"+"|");
       
       ContextUtil.CONTEXT = getApplicationContext();
       
@@ -42,12 +47,31 @@ public class MainActivity extends Activity
             showEmergencyCallAcitivity();
          }
       });
+      
+      // q보이스에서 '음성녹음'으로 들어온거면 파일 재생
+      if (MediaStore.Audio.Media.RECORD_SOUND_ACTION.equals(getIntent().getAction()))
+         showVoiceRecordAcitivityWithPlay();
+   }
+   
+   @Override
+   public void onConfigurationChanged(Configuration newConfig)
+   {
+//      super.onConfigurationChanged(newConfig);
    }
    
    
    private void showVoiceRecordAcitivity()
    {
       Intent intent = new Intent(this, VoiceRecordActivity.class);
+      startActivity(intent);
+   }
+   
+   
+//   q보이스에서 '음성녹음'으로 들어온거면 파일 재생
+   private void showVoiceRecordAcitivityWithPlay()
+   {
+      Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+      intent.setClass(getApplicationContext(), VoiceRecordActivity.class);
       startActivity(intent);
    }
    

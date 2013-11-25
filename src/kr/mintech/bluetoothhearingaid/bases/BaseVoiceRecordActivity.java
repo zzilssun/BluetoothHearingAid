@@ -6,15 +6,19 @@ import java.util.List;
 import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.activities.PlayPanelFregment;
 import kr.mintech.bluetoothhearingaid.activities.RecordPanelFragment;
+import kr.mintech.bluetoothhearingaid.activities.PlayPanelFregment.OnRemovePlayPanelCallback;
 import kr.mintech.bluetoothhearingaid.activities.RecordPanelFragment.RecordEndCallback;
 import kr.mintech.bluetoothhearingaid.adapters.FilesAdapter;
 import kr.mintech.bluetoothhearingaid.consts.NumberConst;
 import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
+import kr.mintech.bluetoothhearingaid.utils.LGTTS;
+import kr.mintech.bluetoothhearingaid.utils.LGTTS.OnTTSCompleteListener;
 import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
@@ -24,8 +28,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
 
 public class BaseVoiceRecordActivity extends FragmentActivity
 {
@@ -33,6 +37,8 @@ public class BaseVoiceRecordActivity extends FragmentActivity
    
    private FilesAdapter _filesAdapter;
    private ViewGroup _layoutPanel;
+   
+   private LGTTS _tts;
    
    
    @Override
@@ -46,21 +52,9 @@ public class BaseVoiceRecordActivity extends FragmentActivity
       ContextUtil.CONTEXT = getApplicationContext();
       
       _layoutPanel = (ViewGroup) findViewById(R.id.layout_panel);
-   }
-   
-   
-   protected void begin()
-   {
-      _filesAdapter = new FilesAdapter(getApplicationContext(), StringConst.NORMAL_PATH);
-//    ListView listFile = (ListView) findViewById(R.id.list_files);
-//    listFile.setAdapter(_filesAdapter);
-//    listFile.setOnItemClickListener(onFilecliClickListener);
       
-      GridView listFile = (GridView) findViewById(R.id.table_files);
-      listFile.setAdapter(_filesAdapter);
-      listFile.setOnItemClickListener(onFilecliClickListener);
-      
-      toggleRecordState(getIntent());
+      _tts = LGTTS.instance(getApplicationContext());
+      _tts.setOnTTSCompleteListener(onTTSCompleteListener);
    }
    
    
@@ -69,7 +63,7 @@ public class BaseVoiceRecordActivity extends FragmentActivity
    {
       super.onNewIntent($intent);
       
-      toggleRecordState($intent);
+      checkIntentAction($intent);
    }
    
    
@@ -91,11 +85,42 @@ public class BaseVoiceRecordActivity extends FragmentActivity
    }
    
    
+   protected void begin()
+   {
+      _filesAdapter = new FilesAdapter(getApplicationContext(), StringConst.NORMAL_PATH);
+//    ListView listFile = (ListView) findViewById(R.id.list_files);
+//    listFile.setAdapter(_filesAdapter);
+//    listFile.setOnItemClickListener(onFilecliClickListener);
+      
+      GridView listFile = (GridView) findViewById(R.id.table_files);
+      listFile.setAdapter(_filesAdapter);
+      listFile.setOnItemClickListener(onFilecliClickListener);
+      
+      checkIntentAction(getIntent());
+   }
+   
+   
    private void clearFragment()
    {
       List<Fragment> list = getSupportFragmentManager().getFragments();
       Fragment fragment = list.get(0);
       getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+   }
+   
+   
+   private void checkIntentAction(Intent $intent)
+   {
+      // q보이스에서 '음성녹음'으로 넘어온거면 파일 재생하기
+      if (MediaStore.Audio.Media.RECORD_SOUND_ACTION.equals($intent.getAction()))
+      {
+         String msg = getString(R.string.recorded_file_count, _filesAdapter.getCount());
+         Log.i("BaseVoiceRecordActivity.java | checkIntentAction", "|" + msg + "|");
+         LGTTS.instance(getApplicationContext()).speak(msg);
+      }
+      else
+      {
+         toggleRecordState($intent);
+      }
    }
    
    
@@ -176,16 +201,38 @@ public class BaseVoiceRecordActivity extends FragmentActivity
    }
    
    
+   private void autoPlayNext()
+   {
+      Log.i("BaseVoiceRecordActivity.java | autoPlayNext", "|" + "======== auto play ============" + "|");
+      File next = _filesAdapter.popForAutoPlay();
+      if (next != null)
+         play(next.toString(), true);
+   }
+   
+   
    // 리스트에서 파일 하나 클릭
    private void play(String $fullpath)
    {
-      Log.i("VoiceRecordActivity.java | play", "|" + $fullpath + "|");
+      play($fullpath, false);
+   }
+   
+   
+   // 리스트에서 파일 하나 클릭
+   private void play(String $fullpath, boolean $autoPlayNext)
+   {
+      Log.i("VoiceRecordActivity.java | play", "|" + $fullpath + "|" + $autoPlayNext);
       
       Bundle bundle = new Bundle();
       bundle.putString(StringConst.KEY_PATH, $fullpath);
       
       PlayPanelFregment panel = new PlayPanelFregment();
       panel.setArguments(bundle);
+      
+      if ($autoPlayNext)
+      {
+         panel.setOnRemovePlayPanelCallback(onRemovePlayPanelCallback);
+      }
+      
       getSupportFragmentManager().beginTransaction().replace(_layoutPanel.getId(), panel).commit();
    }
    
@@ -221,4 +268,23 @@ public class BaseVoiceRecordActivity extends FragmentActivity
       }
    };
    
+   // x개의 파일이 있습니다 재생 후
+   private OnTTSCompleteListener onTTSCompleteListener = new OnTTSCompleteListener()
+   {
+      @Override
+      public void onComplete()
+      {
+         autoPlayNext();
+      }
+   };
+   
+   // 하나의 파일 자동 재생이 끝나면 다음 녹음파일 재생하기
+   private OnRemovePlayPanelCallback onRemovePlayPanelCallback = new OnRemovePlayPanelCallback()
+   {
+      @Override
+      public void onRemoved(String $file)
+      {
+         autoPlayNext();
+      }
+   };
 }

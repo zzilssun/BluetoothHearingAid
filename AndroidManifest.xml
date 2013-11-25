@@ -35,15 +35,20 @@
             android:name="com.google.android.gms.version"
             android:value="4030500" />
 
-        <activity android:name=".MainActivity" >
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.provider.MediaStore.RECORD_SOUND" />
 
+                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".activities.VoiceRecordActivity"
+            android:configChanges="orientation"
             android:label="@string/voice_record"
             android:launchMode="singleTask" >
             <meta-data
@@ -52,6 +57,7 @@
         </activity>
         <activity
             android:name=".activities.EmergencyCallActivity"
+            android:configChanges="orientation"
             android:label="@string/emergency_call"
             android:launchMode="singleTask" >
             <meta-data
@@ -60,6 +66,7 @@
         </activity>
         <activity
             android:name=".activities.SelectPersonActivity"
+            android:configChanges="orientation"
             android:label="@string/select_person" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

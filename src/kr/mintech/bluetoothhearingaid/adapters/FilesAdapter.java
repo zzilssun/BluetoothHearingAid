@@ -24,6 +24,7 @@ public class FilesAdapter extends BaseAdapter
    private Context _context;
    private LayoutInflater _inflater;
    private String _path;
+   private int _lastAutoPlayPosition = -1;
    
    
    public FilesAdapter(Context $context, String $path)
@@ -61,6 +62,26 @@ public class FilesAdapter extends BaseAdapter
    public void refresh()
    {
       loadFileList();
+   }
+   
+   
+   // 자동재생을 위한 다음에 자동재생할 파일 가져오기
+   public File popForAutoPlay()
+   {
+      File result = null;
+      
+      if (getCount() == 0)
+         return result;
+      
+      _lastAutoPlayPosition++;
+      
+      Log.i("FilesAdapter.java | popForAutoPlay", "|" + _lastAutoPlayPosition + "|" + getCount());
+      if (_lastAutoPlayPosition < getCount())
+         result = _items.get(_lastAutoPlayPosition);
+      else
+         _lastAutoPlayPosition = -1;
+      
+      return result;
    }
    
    

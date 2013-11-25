@@ -12,5 +12,6 @@
     <string name="sms_content_full">%1$s 에서 충격이 발생했습니다. 녹음된 파일은 %2$s 에서 들을 수 있습니다.</string>
     <string name="sms_content_map">%s 에서 충격이 발생했습니다.</string>
     <string name="sms_content_for_test">충격이 발생했습니다.</string>
+    <string name="recorded_file_count">%d개의 파일이 있습니다.</string>
 
 </resources>

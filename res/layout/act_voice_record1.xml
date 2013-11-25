@@ -11,9 +11,9 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:numColumns="1"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
         android:scrollbarStyle="outsideOverlay"
         android:stretchMode="columnWidth" />
 

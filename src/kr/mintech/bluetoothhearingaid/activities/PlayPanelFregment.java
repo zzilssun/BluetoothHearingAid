@@ -36,6 +36,7 @@ public class PlayPanelFregment extends Fragment
    private String _fullPath;
    private MediaPlayer _player;
    private Calendar _calendar;
+   private OnRemovePlayPanelCallback _removeCallback;
    
    
    @Override
@@ -118,6 +119,8 @@ public class PlayPanelFregment extends Fragment
    public void onDestroyView()
    {
       stop();
+      if (_removeCallback != null)
+         _removeCallback.onRemoved(_fullPath);
       super.onDestroyView();
    }
    
@@ -213,4 +216,14 @@ public class PlayPanelFregment extends Fragment
       }
    };
    
+   public interface OnRemovePlayPanelCallback
+   {
+      public void onRemoved(String $file);
+   }
+   
+   
+   public void setOnRemovePlayPanelCallback(OnRemovePlayPanelCallback $callback)
+   {
+      _removeCallback = $callback;
+   }
 }
