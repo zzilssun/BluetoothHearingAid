@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 
@@ -36,14 +37,26 @@ public class SelectPersonActivity extends Activity
       ListView listPeople = (ListView) findViewById(R.id.list_people);
       listPeople.setAdapter(_peopleAdapter);
       listPeople.setOnItemClickListener(onItemClickListener);
-   }
-   
-   
-   @Override
-   public void onBackPressed()
-   {
-      checkResult();
-      super.onBackPressed();
+      
+      Button btnOk = (Button) findViewById(R.id.btn_ok);
+      btnOk.setOnClickListener(new View.OnClickListener()
+      {
+         @Override
+         public void onClick(View arg0)
+         {
+            checkResult();
+         }
+      });
+      
+      Button btnCancel = (Button) findViewById(R.id.btn_cancel);
+      btnCancel.setOnClickListener(new View.OnClickListener()
+      {
+         @Override
+         public void onClick(View arg0)
+         {
+            finish();
+         }
+      });
    }
    
    
@@ -71,6 +84,7 @@ public class SelectPersonActivity extends Activity
          PreferenceUtil.putSMSReceiver(jsonArray.toString());
       
       setResult(RESULT_OK);
+      finish();
    }
    
    private OnItemClickListener onItemClickListener = new OnItemClickListener()
@@ -85,14 +99,12 @@ public class SelectPersonActivity extends Activity
          if (_type == NumberConst.TYPE_CALL)
          {
             checkResult();
-            finish();
          }
          else
          {
             if (_peopleAdapter.checkedPeople().size() >= 5)
             {
                checkResult();
-               finish();
             }
          }
       }

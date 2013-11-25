@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.beans.Person;
 import kr.mintech.bluetoothhearingaid.beans.PersonViewHolder;
+import kr.mintech.bluetoothhearingaid.utils.JsonUtil;
+import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
@@ -27,7 +29,14 @@ public class PeopleAdapter extends BaseAdapter
       _inflater = LayoutInflater.from($context);
       _items.clear();
       
-      Cursor cursor = $context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+      String jsonStr = PreferenceUtil.smsReceiver();
+      ArrayList<String> jsonArray = JsonUtil.array(jsonStr);
+      ArrayList<Person> selectedPeople = new ArrayList<Person>();
+      for (String json : jsonArray)
+         selectedPeople.add(new Person(json));
+      
+      Cursor cursor = $context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null,
+            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
       
       cursor.moveToFirst();
       while (!cursor.isAfterLast())
@@ -37,7 +46,15 @@ public class PeopleAdapter extends BaseAdapter
          String phone = cursor.getString(phone_idx);
          String name = cursor.getString(name_idx);
          
-         _items.add(new Person(name, phone));
+         Person person = new Person(name, phone);
+         
+         for (Person p : selectedPeople)
+         {
+            if (p.name.equals(person.name) && p.phone.equals(person.phone))
+               person.selected = true;
+         }
+         
+         _items.add(person);
          
          cursor.moveToNext();
       }
@@ -63,6 +80,9 @@ public class PeopleAdapter extends BaseAdapter
          if (person.selected)
             result.add(person);
       }
+      
+      if (result.size() > 5)
+         result.remove(result.size() - 1);
       
       return result;
    }

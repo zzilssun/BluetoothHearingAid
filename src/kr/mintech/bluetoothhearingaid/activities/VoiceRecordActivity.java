@@ -92,7 +92,10 @@ public class VoiceRecordActivity extends FragmentActivity
       String action = getPackageName() + "." + StringConst.KEY_TOGGLE_RECORD_STATE;
       Log.i("VoiceRecordActivity.java | toggleRecordState", "|" + action + "|" + $intent.getAction());
       if (!action.equals($intent.getAction()))
+      {
+         startRecord(false);
          return;
+      }
       
       Log.i("MainActivity.java | toggleRecordState", "| recording? " + PreferenceUtil.isRecording() + "|");
       if (PreferenceUtil.isRecording())
