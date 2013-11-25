@@ -56,6 +56,15 @@
                 android:value="kr.mintech.bluetoothhearingaid.MainActivity" />
         </activity>
         <activity
+            android:name=".activities.EmergencyVoiceRecordActivity"
+            android:configChanges="orientation"
+            android:label="@string/emergency_voice_record"
+            android:launchMode="singleTask" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="kr.mintech.bluetoothhearingaid.MainActivity" />
+        </activity>
+        <activity
             android:name=".activities.EmergencyCallActivity"
             android:configChanges="orientation"
             android:label="@string/emergency_call"

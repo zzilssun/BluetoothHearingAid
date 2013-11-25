@@ -55,6 +55,8 @@ public class BaseVoiceRecordActivity extends FragmentActivity
       
       _tts = LGTTS.instance(getApplicationContext());
       _tts.setOnTTSCompleteListener(onTTSCompleteListener);
+      
+      Log.i("BaseVoiceRecordActivity.java | onCreate", "|" + "onCreate" + "|");
    }
    
    
@@ -62,7 +64,7 @@ public class BaseVoiceRecordActivity extends FragmentActivity
    protected void onNewIntent(Intent $intent)
    {
       super.onNewIntent($intent);
-      
+      Log.i("BaseVoiceRecordActivity.java | onNewIntent", "|" + "onNewIntent" + "|");
       checkIntentAction($intent);
    }
    
@@ -87,7 +89,7 @@ public class BaseVoiceRecordActivity extends FragmentActivity
    
    protected void begin()
    {
-      _filesAdapter = new FilesAdapter(getApplicationContext(), StringConst.NORMAL_PATH);
+      _filesAdapter = new FilesAdapter(getApplicationContext(), _path);
 //    ListView listFile = (ListView) findViewById(R.id.list_files);
 //    listFile.setAdapter(_filesAdapter);
 //    listFile.setOnItemClickListener(onFilecliClickListener);
@@ -110,6 +112,7 @@ public class BaseVoiceRecordActivity extends FragmentActivity
    
    private void checkIntentAction(Intent $intent)
    {
+      Log.i("BaseVoiceRecordActivity.java | checkIntentAction", "|" + _path + "|");
       // q보이스에서 '음성녹음'으로 넘어온거면 파일 재생하기
       if (MediaStore.Audio.Media.RECORD_SOUND_ACTION.equals($intent.getAction()))
       {
@@ -142,8 +145,7 @@ public class BaseVoiceRecordActivity extends FragmentActivity
       }
       else
       {
-         int recordMode = $intent.getIntExtra(StringConst.KEY_RECORD_MODE, NumberConst.RECORD_MODE_NORMAL);
-         startRecord(true, recordMode);
+         startRecord(true);
       }
    }
    
@@ -170,28 +172,18 @@ public class BaseVoiceRecordActivity extends FragmentActivity
     * 
     * @param $startRecordingImmediate
     *           녹음을 곧바로 시작할 것인가
-    */
-   private void startRecord(boolean $startRecordingImmediate)
-   {
-      startRecord($startRecordingImmediate, NumberConst.RECORD_MODE_NORMAL);
-   }
-   
-   
-   /**
-    * 녹음 시작
-    * 
-    * @param $startRecordingImmediate
-    *           녹음을 곧바로 시작할 것인가
     * @param $recordMode
     *           NumberConst.RECORD_MODE_NORMAL=일상적인 녹음
     */
-   private void startRecord(boolean $startRecordingImmediate, int $recordMode)
+   private void startRecord(boolean $startRecordingImmediate)
    {
       Log.i("VoiceRecordActivity.java | startRecord", "|" + "show record panel" + "|");
       
+      int recordMode = StringConst.EMERGENCY_PATH.equals(_path) ? NumberConst.RECORD_MODE_DROP : NumberConst.RECORD_MODE_NORMAL;
+      
       Bundle bundle = new Bundle();
       bundle.putBoolean(StringConst.KEY_START_RECORDING_ON_OPEN, $startRecordingImmediate);
-      bundle.putInt(StringConst.KEY_RECORD_MODE, $recordMode);
+      bundle.putInt(StringConst.KEY_RECORD_MODE, recordMode);
       bundle.putString(StringConst.KEY_PATH, _path);
       
       RecordPanelFragment panel = new RecordPanelFragment();

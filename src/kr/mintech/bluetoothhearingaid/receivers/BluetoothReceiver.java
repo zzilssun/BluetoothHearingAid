@@ -1,5 +1,6 @@
 package kr.mintech.bluetoothhearingaid.receivers;
 
+import kr.mintech.bluetoothhearingaid.activities.EmergencyVoiceRecordActivity;
 import kr.mintech.bluetoothhearingaid.activities.VoiceRecordActivity;
 import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
@@ -30,11 +31,20 @@ public class BluetoothReceiver extends BroadcastReceiver
          {
             Log.i("BluetoothReceiver.java | onReceive", "|" + currentKey + "|");
             
-            if (currentKey == KeyEvent.KEYCODE_MEDIA_PREVIOUS || currentKey == KeyEvent.KEYCODE_MEDIA_NEXT)
+            // PREVIOUS=nomal, NEXT=drop
+            if (currentKey == KeyEvent.KEYCODE_MEDIA_PREVIOUS)
             {
                Intent intent = new Intent($context.getPackageName() + "." + StringConst.KEY_TOGGLE_RECORD_STATE);
-               intent.putExtra(StringConst.KEY_RECORD_MODE, currentKey);// PREVIOUS=nomal, NEXT=drop
+               intent.putExtra(StringConst.KEY_RECORD_MODE, currentKey);
                intent.setClass($context, VoiceRecordActivity.class);
+               intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+               $context.startActivity(intent);
+            }
+            else if (currentKey == KeyEvent.KEYCODE_MEDIA_NEXT)
+            {
+               Intent intent = new Intent($context.getPackageName() + "." + StringConst.KEY_TOGGLE_RECORD_STATE);
+               intent.putExtra(StringConst.KEY_RECORD_MODE, currentKey);
+               intent.setClass($context, EmergencyVoiceRecordActivity.class);
                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                $context.startActivity(intent);
             }

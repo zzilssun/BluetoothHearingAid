@@ -1,15 +1,14 @@
 package kr.mintech.bluetoothhearingaid;
 
 import kr.mintech.bluetoothhearingaid.activities.EmergencyCallActivity;
+import kr.mintech.bluetoothhearingaid.activities.EmergencyVoiceRecordActivity;
 import kr.mintech.bluetoothhearingaid.activities.VoiceRecordActivity;
 import kr.mintech.bluetoothhearingaid.services.MediaButtonMonitorService;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -20,8 +19,6 @@ public class MainActivity extends Activity
    {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.act_main);
-      
-      Log.i("MainActivity.java | onCreate", "|" + "$$$$$$$$$$$$$$$$$$$$$$$$$$"+"|");
       
       ContextUtil.CONTEXT = getApplicationContext();
       
@@ -35,6 +32,16 @@ public class MainActivity extends Activity
          public void onClick(View v)
          {
             showVoiceRecordAcitivity();
+         }
+      });
+      
+      Button btnEmergencyVoiceRecord = (Button) findViewById(R.id.btn_emergency_voice_record);
+      btnEmergencyVoiceRecord.setOnClickListener(new View.OnClickListener()
+      {
+         @Override
+         public void onClick(View v)
+         {
+            showEmergencyVoiceRecordAcitivity();
          }
       });
       
@@ -53,12 +60,6 @@ public class MainActivity extends Activity
          showVoiceRecordAcitivityWithPlay();
    }
    
-   @Override
-   public void onConfigurationChanged(Configuration newConfig)
-   {
-//      super.onConfigurationChanged(newConfig);
-   }
-   
    
    private void showVoiceRecordAcitivity()
    {
@@ -72,6 +73,13 @@ public class MainActivity extends Activity
    {
       Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
       intent.setClass(getApplicationContext(), VoiceRecordActivity.class);
+      startActivity(intent);
+   }
+   
+   
+   private void showEmergencyVoiceRecordAcitivity()
+   {
+      Intent intent = new Intent(this, EmergencyVoiceRecordActivity.class);
       startActivity(intent);
    }
    

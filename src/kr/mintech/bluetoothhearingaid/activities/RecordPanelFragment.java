@@ -124,6 +124,7 @@ public class RecordPanelFragment extends Fragment
 //      Calendar calendar = Calendar.getInstance();
 //      String currentDateStr = DateFormatUtils.format(calendar, "yyyyMMdd_HHmmss");
       
+      Log.i("RecordPanelFragment.java | startRecord", "|" + _recordMode + "|" + NumberConst.RECORD_MODE_NORMAL + "|" + NumberConst.RECORD_MODE_DROP);
       String prefix = _recordMode == NumberConst.RECORD_MODE_NORMAL ? "메모 " : "응급 ";
       File file = new File(path + File.separator + prefix + FileUtil.nextFilename(_path) + ".m4a");
       
