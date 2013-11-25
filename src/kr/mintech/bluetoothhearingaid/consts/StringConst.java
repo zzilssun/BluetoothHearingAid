@@ -4,7 +4,9 @@ import android.os.Environment;
 
 public class StringConst
 {
-   public static final String PATH = Environment.getExternalStorageDirectory() + "/VoiceRecorder/BluetoothHearingAid";
+   private static final String BASE_PATH = Environment.getExternalStorageDirectory() + "/VoiceRecorder/BluetoothHearingAid";
+   public static final String NORMAL_PATH = BASE_PATH + "/normal";
+   public static final String EMERGENCY_PATH = BASE_PATH + "/emergency";
    
    public static final String ACTION_FORWORD_BROADCAST = "ACTION_FORWORD_BROADCAST";
    public static final String ACTION_STOP_RECORDING = "ACTION_STOP_RECORDING";

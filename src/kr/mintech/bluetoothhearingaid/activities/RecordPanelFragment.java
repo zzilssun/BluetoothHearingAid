@@ -9,6 +9,7 @@ import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.consts.NumberConst;
 import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.ContextUtil;
+import kr.mintech.bluetoothhearingaid.utils.FileUtil;
 import kr.mintech.bluetoothhearingaid.utils.PreferenceUtil;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -46,6 +47,7 @@ public class RecordPanelFragment extends Fragment
    private boolean _startRecordingOnOpen = false;
    private int _recordMode = NumberConst.RECORD_MODE_NORMAL;
    private boolean _isStoped = false;
+   private String _path = StringConst.NORMAL_PATH;
    
    
    @Override
@@ -62,6 +64,7 @@ public class RecordPanelFragment extends Fragment
       
       _startRecordingOnOpen = getArguments().getBoolean(StringConst.KEY_START_RECORDING_ON_OPEN);
       _recordMode = getArguments().getInt(StringConst.KEY_RECORD_MODE);
+      _path = getArguments().getString(StringConst.KEY_PATH);
    }
    
    
@@ -114,15 +117,15 @@ public class RecordPanelFragment extends Fragment
     */
    public void startRecord()
    {
-      File path = new File(StringConst.PATH);
+      File path = new File(_path);
       if (!path.exists())
          path.mkdirs();
       
-      Calendar calendar = Calendar.getInstance();
-      String currentDateStr = DateFormatUtils.format(calendar, "yyyyMMdd_HHmmss");
+//      Calendar calendar = Calendar.getInstance();
+//      String currentDateStr = DateFormatUtils.format(calendar, "yyyyMMdd_HHmmss");
       
-      String prefix = _recordMode == NumberConst.RECORD_MODE_NORMAL ? "voice_" : "drop_";
-      File file = new File(path + File.separator + prefix + currentDateStr + ".m4a");
+      String prefix = _recordMode == NumberConst.RECORD_MODE_NORMAL ? "메모 " : "응급 ";
+      File file = new File(path + File.separator + prefix + FileUtil.nextFilename(_path) + ".m4a");
       
       try
       {

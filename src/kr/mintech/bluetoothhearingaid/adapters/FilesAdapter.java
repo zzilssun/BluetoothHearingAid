@@ -6,12 +6,12 @@ import java.util.Collections;
 
 import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.beans.FileViewHolder;
-import kr.mintech.bluetoothhearingaid.consts.StringConst;
 import kr.mintech.bluetoothhearingaid.utils.FileUtil;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,13 +23,15 @@ public class FilesAdapter extends BaseAdapter
    private ArrayList<File> _items = new ArrayList<File>();
    private Context _context;
    private LayoutInflater _inflater;
+   private String _path;
    
    
-   public FilesAdapter(Context $context)
+   public FilesAdapter(Context $context, String $path)
    {
       super();
       _context = $context;
       _inflater = LayoutInflater.from($context);
+      _path = $path;
       loadFileList();
    }
    
@@ -38,9 +40,12 @@ public class FilesAdapter extends BaseAdapter
    {
       _items.clear();
       
-      File path = new File(StringConst.PATH);
+      File path = new File(_path);
       if (!path.exists())
+      {
          path.mkdirs();
+         Log.i("FilesAdapter.java | loadFileList", "|" + _path + "|");
+      }
       
       for (File file : path.listFiles())
       {
@@ -87,11 +92,13 @@ public class FilesAdapter extends BaseAdapter
       
       if ($convertView == null)
       {
-         $convertView = _inflater.inflate(R.layout.listitem_record_file, null);
+         $convertView = _inflater.inflate(R.layout.listitem_record_file1, null);
          
          holder = new FileViewHolder();
          holder.title = (TextView) $convertView.findViewById(R.id.text_name);
-         holder.createdAt = (TextView) $convertView.findViewById(R.id.text_created_at);
+         holder.date = (TextView) $convertView.findViewById(R.id.text_date);
+         holder.time = (TextView) $convertView.findViewById(R.id.text_time);
+//         holder.createdAt = (TextView) $convertView.findViewById(R.id.text_created_at);
          holder.duration = (TextView) $convertView.findViewById(R.id.text_duration);
          
          $convertView.setTag(holder);
@@ -104,8 +111,10 @@ public class FilesAdapter extends BaseAdapter
       File file = _items.get($index);
       
       holder.title.setText(FileUtil.filenameOnly(file.getName()));
-      holder.createdAt.setText(DateFormatUtils.format(file.lastModified(), "yyyy/MM/dd HH:mm:ss"));
-      holder.duration.setText(FileUtil.duration(_context, file.getAbsolutePath()));
+      holder.date.setText(DateFormatUtils.format(file.lastModified(), "MM월 dd일"));
+      holder.time.setText(DateFormatUtils.format(file.lastModified(), "HH시 mm분"));
+//      holder.createdAt.setText(DateFormatUtils.format(file.lastModified(), "yyyy/MM/dd HH:mm:ss"));
+      holder.duration.setText(FileUtil.duration(_context, file.getAbsolutePath(), "m분 s초"));
       
       return $convertView;
    }
