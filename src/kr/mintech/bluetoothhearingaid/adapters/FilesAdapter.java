@@ -42,6 +42,9 @@ public class FilesAdapter extends BaseAdapter
       _items.clear();
       
       File path = new File(_path);
+      if(!path.getParentFile().exists())
+         path.getParentFile().mkdirs();
+      
       if (!path.exists())
       {
          path.mkdirs();
