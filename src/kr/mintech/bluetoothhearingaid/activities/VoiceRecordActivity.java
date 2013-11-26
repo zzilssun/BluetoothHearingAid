@@ -3,7 +3,6 @@ package kr.mintech.bluetoothhearingaid.activities;
 import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.bases.BaseVoiceRecordActivity;
 import kr.mintech.bluetoothhearingaid.consts.StringConst;
-import android.content.res.Configuration;
 import android.os.Bundle;
 
 public class VoiceRecordActivity extends BaseVoiceRecordActivity

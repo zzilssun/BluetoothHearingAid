@@ -62,6 +62,7 @@ public class PlayPanelFregment extends Fragment
       
       _textCurrentPosition = (TextView) view.findViewById(R.id.text_current_position);
       _textTotalDuration = (TextView) view.findViewById(R.id.text_total_duration);
+      _textTotalDuration.setText(FileUtil.duration(getActivity(), _fullPath));
       
       _seekbar = (SeekBar) view.findViewById(R.id.progress_play);
       
@@ -109,8 +110,6 @@ public class PlayPanelFregment extends Fragment
          }
       });
       
-      play();
-      
       return view;
    }
    
@@ -130,7 +129,6 @@ public class PlayPanelFregment extends Fragment
       _player = null;
       _player = new MediaPlayer();
       _player.setOnPreparedListener(preparedListener);
-      _player.setOnCompletionListener(completionListener);
       
       ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
       service.scheduleWithFixedDelay(new Runnable()
@@ -160,6 +158,7 @@ public class PlayPanelFregment extends Fragment
     */
    public void stop()
    {
+      _seekbar.setProgress(0);
       _btnPlay.setEnabled(true);
       _btnStop.setEnabled(false);
       
@@ -188,8 +187,6 @@ public class PlayPanelFregment extends Fragment
       }
       
       _player = null;
-      
-      getFragmentManager().beginTransaction().remove(this).commit();
    }
    
    private OnPreparedListener preparedListener = new OnPreparedListener()
@@ -204,15 +201,6 @@ public class PlayPanelFregment extends Fragment
          
          _btnPlay.setEnabled(false);
          _btnStop.setEnabled(true);
-      }
-   };
-   
-   private OnCompletionListener completionListener = new OnCompletionListener()
-   {
-      @Override
-      public void onCompletion(MediaPlayer mp)
-      {
-         stop();
       }
    };
    

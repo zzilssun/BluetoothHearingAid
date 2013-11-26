@@ -80,8 +80,13 @@ public class BaseVoiceRecordActivity extends FragmentActivity
    @Override
    public void onBackPressed()
    {
-      if (_layoutPanel.getChildCount() > 0)
-         clearFragment();
+      List<Fragment> fragments = getSupportFragmentManager().getFragments();
+      
+      if (fragments.size() > 0)
+      {
+         Fragment fragment = fragments.get(0);
+         getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+      }
       else
          super.onBackPressed();
    }
@@ -99,14 +104,6 @@ public class BaseVoiceRecordActivity extends FragmentActivity
       listFile.setOnItemClickListener(onFilecliClickListener);
       
       checkIntentAction(getIntent());
-   }
-   
-   
-   private void clearFragment()
-   {
-      List<Fragment> list = getSupportFragmentManager().getFragments();
-      Fragment fragment = list.get(0);
-      getSupportFragmentManager().beginTransaction().remove(fragment).commit();
    }
    
    

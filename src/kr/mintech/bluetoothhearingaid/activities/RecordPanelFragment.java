@@ -94,6 +94,7 @@ public class RecordPanelFragment extends Fragment
             stopRecord();
          }
       });
+      _btnRecordStop.setEnabled(false);
       
       if (_startRecordingOnOpen)
          startRecord();
