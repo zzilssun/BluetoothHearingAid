@@ -5,8 +5,8 @@ import java.util.List;
 
 import kr.mintech.bluetoothhearingaid.R;
 import kr.mintech.bluetoothhearingaid.activities.PlayPanelFregment;
-import kr.mintech.bluetoothhearingaid.activities.RecordPanelFragment;
 import kr.mintech.bluetoothhearingaid.activities.PlayPanelFregment.OnRemovePlayPanelCallback;
+import kr.mintech.bluetoothhearingaid.activities.RecordPanelFragment;
 import kr.mintech.bluetoothhearingaid.activities.RecordPanelFragment.RecordEndCallback;
 import kr.mintech.bluetoothhearingaid.adapters.FilesAdapter;
 import kr.mintech.bluetoothhearingaid.consts.NumberConst;
@@ -29,7 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
+import android.widget.ListView;
 
 public class BaseVoiceRecordActivity extends FragmentActivity
 {
@@ -45,7 +45,7 @@ public class BaseVoiceRecordActivity extends FragmentActivity
    protected void onCreate(Bundle savedInstanceState)
    {
       super.onCreate(savedInstanceState);
-      setContentView(R.layout.act_voice_record1);
+      setContentView(R.layout.act_voice_record);
       
       getActionBar().setDisplayHomeAsUpEnabled(true);
       
@@ -80,12 +80,16 @@ public class BaseVoiceRecordActivity extends FragmentActivity
    @Override
    public void onBackPressed()
    {
-      List<Fragment> fragments = getSupportFragmentManager().getFragments();
-      
-      if (fragments.size() > 0)
+      if (_layoutPanel.getChildCount() > 0)
       {
-         Fragment fragment = fragments.get(0);
-         getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+         List<Fragment> fragments = getSupportFragmentManager().getFragments();
+         
+         if (fragments.size() > 0)
+         {
+            Fragment fragment = fragments.get(0);
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+            _layoutPanel.removeAllViews();
+         }
       }
       else
          super.onBackPressed();
@@ -95,11 +99,7 @@ public class BaseVoiceRecordActivity extends FragmentActivity
    protected void begin()
    {
       _filesAdapter = new FilesAdapter(getApplicationContext(), _path);
-//    ListView listFile = (ListView) findViewById(R.id.list_files);
-//    listFile.setAdapter(_filesAdapter);
-//    listFile.setOnItemClickListener(onFilecliClickListener);
-      
-      GridView listFile = (GridView) findViewById(R.id.table_files);
+      ListView listFile = (ListView) findViewById(R.id.list_files);
       listFile.setAdapter(_filesAdapter);
       listFile.setOnItemClickListener(onFilecliClickListener);
       

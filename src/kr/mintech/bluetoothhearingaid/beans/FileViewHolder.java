@@ -4,11 +4,8 @@ import android.widget.TextView;
 
 public class FileViewHolder
 {
-   public TextView title;
-//   public TextView createdAt;
+   public TextView name;
+   public TextView alarm;
+   public TextView createdAt;
    public TextView duration;
-   
-   public TextView date;
-   public TextView time;
-   
 }

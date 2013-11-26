@@ -42,7 +42,7 @@ public class FilesAdapter extends BaseAdapter
       _items.clear();
       
       File path = new File(_path);
-      if(!path.getParentFile().exists())
+      if (!path.getParentFile().exists())
          path.getParentFile().mkdirs();
       
       if (!path.exists())
@@ -116,13 +116,12 @@ public class FilesAdapter extends BaseAdapter
       
       if ($convertView == null)
       {
-         $convertView = _inflater.inflate(R.layout.listitem_record_file1, null);
+         $convertView = _inflater.inflate(R.layout.listitem_record_file, null);
          
          holder = new FileViewHolder();
-         holder.title = (TextView) $convertView.findViewById(R.id.text_name);
-         holder.date = (TextView) $convertView.findViewById(R.id.text_date);
-         holder.time = (TextView) $convertView.findViewById(R.id.text_time);
-//         holder.createdAt = (TextView) $convertView.findViewById(R.id.text_created_at);
+         holder.name = (TextView) $convertView.findViewById(R.id.text_name);
+         holder.alarm = (TextView) $convertView.findViewById(R.id.text_alarm);
+         holder.createdAt = (TextView) $convertView.findViewById(R.id.text_created_at);
          holder.duration = (TextView) $convertView.findViewById(R.id.text_duration);
          
          $convertView.setTag(holder);
@@ -134,10 +133,9 @@ public class FilesAdapter extends BaseAdapter
       
       File file = _items.get($index);
       
-      holder.title.setText(FileUtil.filenameOnly(file.getName()));
-      holder.date.setText(DateFormatUtils.format(file.lastModified(), "MM월 dd일"));
-      holder.time.setText(DateFormatUtils.format(file.lastModified(), "HH시 mm분"));
-//      holder.createdAt.setText(DateFormatUtils.format(file.lastModified(), "yyyy/MM/dd HH:mm:ss"));
+      holder.name.setText(FileUtil.filenameOnly(file.getName()));
+//      holder.alarm.setText();
+      holder.createdAt.setText(DateFormatUtils.format(file.lastModified(), "yyyy-MM-dd HH:mm:ss"));
       holder.duration.setText(FileUtil.duration(_context, file.getAbsolutePath(), "m분 s초"));
       
       return $convertView;

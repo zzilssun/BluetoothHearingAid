@@ -13,7 +13,6 @@ import kr.mintech.bluetoothhearingaid.utils.FileUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -62,7 +61,6 @@ public class PlayPanelFregment extends Fragment
       
       _textCurrentPosition = (TextView) view.findViewById(R.id.text_current_position);
       _textTotalDuration = (TextView) view.findViewById(R.id.text_total_duration);
-      _textTotalDuration.setText(FileUtil.duration(getActivity(), _fullPath));
       
       _seekbar = (SeekBar) view.findViewById(R.id.progress_play);
       
@@ -109,6 +107,9 @@ public class PlayPanelFregment extends Fragment
             stop();
          }
       });
+      _btnStop.setEnabled(false);
+      
+      play();
       
       return view;
    }
